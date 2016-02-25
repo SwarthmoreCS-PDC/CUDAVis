@@ -37,6 +37,7 @@ set(TIMER_CPU timer_base.h timer_cpu.h timer_cpu.cpp)
 set(TIMER_GPU handle_cuda_error.h timer_base.h timer_gpu.h timer_gpu.cu)
 
 add_library(cputimer ${TIMER_CPU})
+add_library(tquad texturedQuad.h texturedQuad.cpp)
 cuda_add_library(gputimer ${TIMER_GPU})
 cuda_add_library(hcudaerr handle_cuda_error.h handle_cuda_error.cu)
 
@@ -47,7 +48,7 @@ cuda_add_library(mycuda
   book.h  myopengllib.h
   book.cu  myopengllib.cu)
 
-set(MYLIBS mycuda cputimer gputimer hcudaerr)
+set(MYLIBS mycuda cputimer gputimer hcudaerr tquad)
 set(GLLIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLEW_LIBRARY})
 set(GPROG ripple simple)
 

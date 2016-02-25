@@ -29,6 +29,7 @@
 #include "cuda.h"
 #include "cuda_gl_interop.h"
 #include "handle_cuda_error.h"
+#include "texturedQuad.h"
 
 class GPUDisplayData {
 
@@ -38,6 +39,7 @@ class GPUDisplayData {
     cudaGraphicsResource *resource;
     int width;    // used to create openGL bufferObj of some dimension
     int height;
+    TexturedQuad quad;
 
     void *gpu_data;  // application-specific CUDA data that is used by
                      // application-spcific drawing functions (this

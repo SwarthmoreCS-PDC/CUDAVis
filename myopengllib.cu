@@ -20,8 +20,8 @@ GPUDisplayData  *GPUDisplayData::gpu_disp = 0;
 // needs in order to change bitmap values in the openGL object
 GPUDisplayData::GPUDisplayData(int w, int h, void *data, 
     const char *winname ="Animation") :
-  bufferObj(0), resource(NULL), width(w), height(h), gpu_data(data),
-  animate_function(NULL), exit_function(NULL)
+  bufferObj(0), resource(NULL), width(w), height(h), quad(),
+  gpu_data(data), animate_function(NULL), exit_function(NULL)
 {
   // init glut
   int argc = 0;   // bogus args for glutInit 
@@ -46,13 +46,15 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
   // create an OpenGL buffer for pixel texture data
   glGenBuffers( 1, &bufferObj );
   glBindBuffer( GL_PIXEL_UNPACK_BUFFER, bufferObj );
-  glBufferData( GL_PIXEL_UNPACK_BUFFER, width * height * 4, 
+  glBufferData( GL_PIXEL_UNPACK_BUFFER, width * height * 3, 
       NULL, GL_DYNAMIC_DRAW );
 
   // Create a resource handle that allows CUDA to 
   // modify OpenGL bufferObj created above
   HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, bufferObj, 
         cudaGraphicsMapFlagsNone ) );
+
+  quad.init();
 
   // static weirdness
   gpu_disp = this;
@@ -118,9 +120,10 @@ void GPUDisplayData::animate(void) {
   }
   HANDLE_ERROR( cudaGraphicsUnmapResources( 1, &obj->resource, NULL ) );
 
-  glClearColor( 0.0, 0.0, 0.0, 1.0 );
+  glClearColor( 1.0, 0.0, 0.0, 1.0 );
   glClear( GL_COLOR_BUFFER_BIT );
-  glDrawPixels( obj->width, obj->height, GL_RGB, GL_UNSIGNED_BYTE, 0 );
+  obj->quad.draw();
+  //glDrawPixels( obj->width, obj->height, GL_RGB, GL_UNSIGNED_BYTE, 0 );
   glutSwapBuffers();
 
 }
