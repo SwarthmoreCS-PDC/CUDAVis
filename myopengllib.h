@@ -48,10 +48,10 @@ class GPUDisplayData {
                      
     // function pointers to user-supplied functions:  
     // set an openGL bitmap value based on the program data values
-    // an animation function will take a uchar4 provided by this
+    // an animation function will take a uchar3 provided by this
     // class and the gpu_data field value which is a pointer to 
     // som GPU side CUDA data that is used by the animate function
-    void (*animate_function)(uchar4 *color_value, void *cuda_data);
+    void (*animate_function)(uchar3 *color_value, void *cuda_data);
     // a function that cleans up application-specific, CUDA-side,
     // allocations
     void (*exit_function)(void* cuda_data);
@@ -76,13 +76,11 @@ class GPUDisplayData {
       exit_function = exit_func;
     } 
 
-    // this is the main loop, the caller passes in the animation 
-    // and exit functions and  
-    void AnimateComputation(void (*anim_func)(uchar4 *, void *));
-
+    // this is the main loop, the caller passes in the 
+    // animation function and an optional exit function
     void AnimateComputation( 
-        void (*anim_func)(uchar4 *, void *),
-        void (*exit_func)(void *));
+        void (*anim_func)(uchar3 *, void *),
+        void (*exit_func)(void *)=NULL);
 
 };
 

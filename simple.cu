@@ -21,9 +21,9 @@
 // try changing this to different powers of 2
 #define DIM 512
 
-static void animate_simple(uchar4 *disp, void *mycudadata);
+static void animate_simple(uchar3 *disp, void *mycudadata);
 static void clean_up(void* mycudadata);
-__global__ void int_to_color( uchar4 *optr, 
+__global__ void int_to_color( uchar3 *optr, 
     const int *my_cuda_data, int ncols);
 __global__ void  simplekernel(int *data, int ncols); 
 
@@ -113,7 +113,7 @@ static void clean_up(void* mycudadata) {
 //          constructor
 // 
 // your animate function prototype must match this one:
-static void animate_simple(uchar4 *devPtr, void *my_data) {
+static void animate_simple(uchar3 *devPtr, void *my_data) {
 
   my_cuda_data *simple_data = (my_cuda_data *)my_data;
   dim3 blocks(simple_data->cols/8, simple_data->rows/8, 1); 
@@ -139,7 +139,7 @@ static void animate_simple(uchar4 *devPtr, void *my_data) {
 //  optr: is an array of openGL RGB pixels, each is a 
 //        4-tuple (x:red, y:green, z:blue, w:opacity) 
 //  my_cuda_data: is cuda 2D array of ints
-__global__ void int_to_color( uchar4 *optr, const int *my_cuda_data, int cols ) {
+__global__ void int_to_color( uchar3 *optr, const int *my_cuda_data, int cols ) {
 
     // get this thread's block position to map into
     // location in opt and my_cuda_data
@@ -154,7 +154,6 @@ __global__ void int_to_color( uchar4 *optr, const int *my_cuda_data, int cols ) 
     optr[offset].x = (my_cuda_data[offset]+10)%255;  // R value
     optr[offset].y = (my_cuda_data[offset]+100)%255; // G value
     optr[offset].z = (my_cuda_data[offset]+200)%255; // B value
-    optr[offset].w = 255;  // just set this to 255 always
 }
 
 // a simple cuda kernel: cyclicly increases a points value by 10
