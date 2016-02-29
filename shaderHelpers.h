@@ -4,6 +4,23 @@
 #include <string>
 #include <GL/glew.h>
 
+typedef struct shaderProgramInfo_t{
+   GLuint vertex;
+   GLuint fragment;
+   GLuint program;
+} shaderProgramInfo;
+
+/* Make a new shader program given filenames containing 
+ * vertex shader and fragment shader sources. 
+ * Returns struct with program set to 0 if error, 
+ * or valid vertex shader, fragment shader, and program object ID if success
+ */
+shaderProgramInfo makeProgram(
+    const std::string& vsFileName, const std::string* fsFileName);
+
+/* Release program and shader IDs */
+void freeProgram(const shaderProgramInfo& pinfo);
+
 /* Read contents of file in fname and return contents as
  * string. Returns empty string if error */
 std::string readFile(const std::string& fname);

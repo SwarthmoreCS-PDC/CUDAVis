@@ -54,7 +54,9 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
   HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, bufferObj, 
         cudaGraphicsMapFlagsNone ) );
 
-  quad.init();
+  if(! quad.init("tquad_v.glsl", "tquad_f.glsl") ) {
+    fprintf(stderr, "Quad init oops\n");
+  }
 
   // static weirdness
   gpu_disp = this;

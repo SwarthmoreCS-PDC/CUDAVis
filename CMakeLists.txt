@@ -60,6 +60,7 @@ foreach(PROG ${GPROG})
   target_link_libraries(${PROG} 
     ${GLLIBS}  m ${MYLIBS})
 endforeach()
+symlink_data(shaders *.glsl)
 
 set(RIPPHEADERS cpu_anim.h cpu_anim.h)
 cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
