@@ -13,23 +13,13 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(GLUT REQUIRED)
 find_package(Threads REQUIRED)
 
-#for window widgets
-FIND_PACKAGE(Qt5Widgets REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
-INCLUDE_DIRECTORIES(${Qt5Widgets_INCLUDE_DIRS}) 
-ADD_DEFINITIONS(${Qt5Widgets_DEFINITIONS})
-SET(CMAKE_CXX_FLAGS 
-    "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-
 #for CUDA
 find_package(CUDA QUIET REQUIRED) 
 cuda_include_directories(${CUDA_INC} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${CUDA_SDK}/lib/)
 
 #get symlink_data macro
-#include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
 include_directories(./)
 
 
@@ -68,10 +58,10 @@ set(GPROG simple)
 foreach(PROG ${GPROG})
   cuda_add_executable(${PROG} ${PROG}.cu ${HDRS})
   target_link_libraries(${PROG} 
-    ${GLLIBS} ${CMAKE_THREAD_LIBS_INIT} m ${MYLIBS})
+    ${GLLIBS}  m ${MYLIBS})
 endforeach()
 
 set(RIPPHEADERS cpu_anim.h cpu_anim.h)
 cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
 target_link_libraries(ripple  
-    ${GLLIBS} ${CMAKE_THREAD_LIBS_INIT} m ${MYLIBS})
+    ${GLLIBS} m ${MYLIBS})
