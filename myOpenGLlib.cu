@@ -7,7 +7,7 @@
 #include "cuda_gl_interop.h"
 
 
-#include "myopengllib.h"
+#include "myOpenGLlib.h"
 #include <string.h>
 
 

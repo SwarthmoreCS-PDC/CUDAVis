@@ -33,24 +33,36 @@ link_directories(${CUDA_SDK}/lib/)
 include_directories(./)
 
 
-set(TIMER_CPU timer_base.h timer_cpu.h timer_cpu.cpp)
-set(TIMER_GPU handle_cuda_error.h timer_base.h timer_gpu.h timer_gpu.cu)
+set(UTIL_HEADERS 
+  timerBase.h timerCPU.h
+  texturedQuad.h
+  shaderHelpers.h 
+  )
 
-add_library(cputimer ${TIMER_CPU})
-add_library(tquad texturedQuad.h texturedQuad.cpp)
-cuda_add_library(gputimer ${TIMER_GPU})
-cuda_add_library(hcudaerr handle_cuda_error.h handle_cuda_error.cu)
+set(UTIL_SRC
+  timerCPU.cpp
+  texturedQuad.cpp
+  shaderHelpers.cpp
+  )
 
-set(HDRS book.h cpu_anim.h cpu_bitmap.h 
-  gl_helper.h)
+set(GPU_UTIL_HEADERS
+  handle_cuda_error.h
+  timerBase.h timerGPU.h
+  myOpenGLlib.h
+  )
 
-cuda_add_library(mycuda 
-  book.h  myopengllib.h
-  book.cu  myopengllib.cu)
+set(GPU_UTIL_SRC
+  handle_cuda_error.cu
+  timerGPU.cu 
+  myOpenGLlib.cu
+  )
 
-set(MYLIBS mycuda cputimer gputimer hcudaerr tquad)
+add_library(myutil ${UTIL_HEADERS} ${UTIL_SRC})
+cuda_add_library(mycudautil ${GPU_UTIL_HEADERS} ${GPU_UTIL_SRC})
+
+set(MYLIBS mycudautil myutil)
 set(GLLIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLEW_LIBRARY})
-set(GPROG ripple simple)
+set(GPROG simple)
 
 
 foreach(PROG ${GPROG})
@@ -59,3 +71,7 @@ foreach(PROG ${GPROG})
     ${GLLIBS} ${CMAKE_THREAD_LIBS_INIT} m ${MYLIBS})
 endforeach()
 
+set(RIPPHEADERS cpu_anim.h cpu_anim.h)
+cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
+target_link_libraries(ripple  
+    ${GLLIBS} ${CMAKE_THREAD_LIBS_INIT} m ${MYLIBS})

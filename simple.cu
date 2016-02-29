@@ -15,7 +15,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
-#include "myopengllib.h"
+#include "myOpenGLlib.h"
 #include "handle_cuda_error.h"
 
 // try changing this to different powers of 2

@@ -1,4 +1,4 @@
-#include "timer_cpu.h"
+#include "timerCPU.h"
 #include <cstdio>
 
 CPUTimer::CPUTimer() {

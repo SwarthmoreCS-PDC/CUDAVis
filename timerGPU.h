@@ -1,7 +1,7 @@
 #ifndef TIMER_GPU_H
 #define TIMER_GPU_H
 
-#include "timer_base.h"
+#include "timerBase.h"
 #include "cuda.h"
 
 /* Time events on GPU side */

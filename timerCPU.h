@@ -1,7 +1,7 @@
 #ifndef TIMER_CPU_H
 #define TIMER_CPU_H
 
-#include "timer_base.h"
+#include "timerBase.h"
 #include <sys/time.h>
 
 /* Time events on CPU side */

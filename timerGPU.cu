@@ -1,4 +1,4 @@
-#include "timer_gpu.h"
+#include "timerGPU.h"
 #include "handle_cuda_error.h"
 #include <cstdio>
 
