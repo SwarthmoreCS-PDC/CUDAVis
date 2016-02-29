@@ -16,7 +16,7 @@ typedef struct shaderProgramInfo_t{
  * or valid vertex shader, fragment shader, and program object ID if success
  */
 shaderProgramInfo makeProgram(
-    const std::string& vsFileName, const std::string* fsFileName);
+    const std::string& vsFileName, const std::string& fsFileName);
 
 /* Release program and shader IDs */
 void freeProgram(const shaderProgramInfo& pinfo);

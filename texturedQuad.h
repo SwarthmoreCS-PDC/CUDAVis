@@ -1,8 +1,9 @@
 #ifndef _TEXTUREDQUAD_H
 #define _TEXTUREDQUAD_H
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 #include <string>
+#include "shaderHelpers.h"
 
 class TexturedQuad {
 
@@ -10,12 +11,10 @@ class TexturedQuad {
     static const float sm_points[];
     /* geometry */
     GLuint m_vbo, m_vao;
-    /* compiled shaders */
-    GLuint m_vs, m_fs;
-    /* shader program */
-    GLuint m_sp; 
+    
+    /* program, shader IDs */
+    shaderProgramInfo m_pinfo;
    
-    bool loadShader(const std::string& fname, GLenum type);
 
    public:
       TexturedQuad();

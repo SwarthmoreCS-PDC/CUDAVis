@@ -16,14 +16,55 @@ std::string readFile(const std::string& fname){
   return ss.str();
 }
 shaderProgramInfo makeProgram(
-    const std::string& vsFileName, const std::string* fsFileName){
+    const std::string& vsFileName, const std::string& fsFileName){
+
   shaderProgramInfo pinfo;
+  GLuint id;
+  std::string shaderSource;
+
   pinfo.program = 0;
+
+  shaderSource = readFile(vsFileName);
+  if(shaderSource.empty()){
+    std::cerr << "Error reading vertex shader source: " << 
+      vsFileName << std::endl;
+    return pinfo;
+  }
+
+  id = makeShader(shaderSource, GL_VERTEX_SHADER);
+  if(id == 0){
+    std::cerr << "Error compiling vertex shader: " << 
+      vsFileName << std::endl;
+  }
+  else{ pinfo.vertex = id; }
+
+  shaderSource = readFile(fsFileName);
+  if(shaderSource.empty()){
+    std::cerr << "Error reading fragment shader source: " << 
+      fsFileName << std::endl;
+    return pinfo;
+  }
+
+  id = makeShader(shaderSource, GL_FRAGMENT_SHADER);
+  if(id == 0){
+    std::cerr << "Error compiling fragment shader: " <<
+      fsFileName << std::endl;
+  }
+  else{ pinfo.fragment = id; }
+
+  id = glCreateProgram();
+  glAttachShader(id, pinfo.vertex);
+  glAttachShader(id, pinfo.fragment);
+  glLinkProgram(id);
+
+  pinfo.program = id;
   return pinfo;
 }
 
 void freeProgram(const shaderProgramInfo& pinfo){
-  return;
+  if(pinfo.vertex){ glDeleteShader(pinfo.vertex); }
+  if(pinfo.fragment){ glDeleteShader(pinfo.fragment); }
+  if(pinfo.program){ glDeleteProgram(pinfo.program); }
 }
 
 GLuint makeShader(const std::string& src, GLenum type){

@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 
+#include <GL/glew.h>
 #include "cuda.h"
 #include "cuda_gl_interop.h"
 #include "handle_cuda_error.h"
