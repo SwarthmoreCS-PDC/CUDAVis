@@ -20,7 +20,7 @@ GPUDisplayData  *GPUDisplayData::gpu_disp = 0;
 // needs in order to change bitmap values in the openGL object
 GPUDisplayData::GPUDisplayData(int w, int h, void *data, 
     const char *winname ="Animation") :
-  bufferObj(0), resource(NULL), width(w), height(h), quad(),
+  bufferObj(0), resource(NULL), width(w), height(h), quad(w,h),
   gpu_data(data), animate_function(NULL), exit_function(NULL)
 {
   // init glut

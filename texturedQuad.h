@@ -18,10 +18,12 @@ class TexturedQuad {
     shaderProgramInfo m_pinfo;
 
     /* texture ID */
-    GLuint m_tex; 
+    GLuint m_tex;
+    
+    int m_width, m_height;
 
    public:
-      TexturedQuad();
+      TexturedQuad(int width, int height);
       ~TexturedQuad();
       bool init(const std::string& vshader, const std::string& fshader);
       void draw();

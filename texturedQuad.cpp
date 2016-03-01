@@ -17,8 +17,9 @@ const float TexturedQuad::sm_texcoords[] = {
    0.0f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f, 1.0f,  0.0f };
 
 
-TexturedQuad::TexturedQuad(): 
-  m_vbo_points(0), m_vbo_tex(0), m_vao(0), m_tex(0)
+TexturedQuad::TexturedQuad(int width, int height): 
+  m_vbo_points(0), m_vbo_tex(0), m_vao(0), m_tex(0),
+  m_width(width), m_height(height)
 { m_pinfo.vertex = m_pinfo.fragment = m_pinfo.program = 0; }
   
 
