@@ -60,7 +60,8 @@ class GPUDisplayData {
 
     // private functions:
     static void animate(void);  // function passed to openGLDisplay
-    static void clean_up(void);  // function registered onexit
+    static void keyboard(unsigned char key, int x, int y);  
+    static void close(void);  
 
     // second part of horrible kludge
     static GPUDisplayData *get_gpu_obj() { return gpu_disp; }

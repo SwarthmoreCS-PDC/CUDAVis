@@ -58,8 +58,8 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
 
 GPUDisplayData::~GPUDisplayData() {
 
-  printf("in GPUDisplayData::destructor\n");
   if (resource){
+    printf("resource should have been released by now\n");
     HANDLE_ERROR( cudaGraphicsUnregisterResource(resource) );
     resource = NULL;
   }
@@ -77,20 +77,11 @@ void GPUDisplayData::AnimateComputation(
   // add callbacks on openGL events
   glutIdleFunc(animate);
   glutDisplayFunc(animate);
-
-  /* not needed, destructor called when glutSetOption
-     tells glut to return from main loop on window close */
-  //atexit(clean_up);   // register function to clean up state on exit
+  glutKeyboardFunc(keyboard);
+  glutCloseFunc(close);
 
   // call glut mainloop
   glutMainLoop();
-}
-
-// cleanup function for call to atexit
-void GPUDisplayData::clean_up(void) {
-
-  printf("in GPUDisplayData::clean_up\n");
-  /* handled by destructor now */
 }
 
 // generic animate function registered with glutDisplayFunc
@@ -99,6 +90,8 @@ void GPUDisplayData::animate(void) {
   uchar3 *devPtr;
   size_t size;
   GPUDisplayData *obj = GPUDisplayData::get_gpu_obj();
+
+  if (!obj->resource) {return;}
 
   HANDLE_ERROR( cudaGraphicsMapResources( 1, &obj->resource, NULL ) ) ;
   HANDLE_ERROR( cudaGraphicsResourceGetMappedPointer( (void**)&devPtr, 
@@ -115,4 +108,19 @@ void GPUDisplayData::animate(void) {
   //glDrawPixels( obj->width, obj->height, GL_RGB, GL_UNSIGNED_BYTE, 0 );
   glutSwapBuffers();
 
+}
+
+void GPUDisplayData::keyboard(unsigned char key, int x, int y){
+  /* allow safe quit with q */
+  if(key=='q'){
+    glutLeaveMainLoop();
+  }
+}
+
+void GPUDisplayData::close(){
+    GPUDisplayData *obj = GPUDisplayData::get_gpu_obj();
+    if (obj->resource){
+      HANDLE_ERROR( cudaGraphicsUnregisterResource(obj->resource) );
+      obj->resource = NULL;
+    }
 }
