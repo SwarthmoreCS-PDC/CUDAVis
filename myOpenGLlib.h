@@ -36,7 +36,6 @@ class GPUDisplayData {
 
   private:
     // openGL data structures
-    GLuint bufferObj;
     cudaGraphicsResource *resource;
     int width;    // used to create openGL bufferObj of some dimension
     int height;

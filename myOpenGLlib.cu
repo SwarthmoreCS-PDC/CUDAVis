@@ -20,7 +20,7 @@ GPUDisplayData  *GPUDisplayData::gpu_disp = 0;
 // needs in order to change bitmap values in the openGL object
 GPUDisplayData::GPUDisplayData(int w, int h, void *data, 
     const char *winname ="Animation") :
-  bufferObj(0), resource(NULL), width(w), height(h), quad(w,h),
+  resource(NULL), width(w), height(h), quad(w,h),
   gpu_data(data), animate_function(NULL), exit_function(NULL)
 {
   // init glut
@@ -42,22 +42,14 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
   }
  
- 
-  // create an OpenGL buffer for pixel texture data
-  glGenBuffers( 1, &bufferObj );
-  glBindBuffer( GL_PIXEL_UNPACK_BUFFER, bufferObj );
-  glBufferData( GL_PIXEL_UNPACK_BUFFER, width * height * 3, 
-      NULL, GL_DYNAMIC_DRAW );
-
-  // Create a resource handle that allows CUDA to 
-  // modify OpenGL bufferObj created above
-  HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, bufferObj, 
-        cudaGraphicsMapFlagsNone ) );
-
- 
   if(! quad.init("tquad_v.glsl", "tquad_f.glsl") ) {
     fprintf(stderr, "Quad init oops\n");
   }
+  
+  // Create a resource handle that allows CUDA to 
+  // modify OpenGL PBO created by quad
+  HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, quad.getPBO(), 
+        cudaGraphicsMapFlagsNone ) );
   
   // static weirdness
   gpu_disp = this;
@@ -70,11 +62,6 @@ GPUDisplayData::~GPUDisplayData() {
   if (resource){
     HANDLE_ERROR( cudaGraphicsUnregisterResource(resource) );
     resource = NULL;
-  }
-  if (bufferObj != 0) {
-    glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
-    glDeleteBuffers( 1, &bufferObj );
-    bufferObj = 0;
   }
 }
 

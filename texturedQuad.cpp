@@ -18,7 +18,8 @@ const float TexturedQuad::sm_texcoords[] = {
 
 
 TexturedQuad::TexturedQuad(int width, int height): 
-  m_vbo_points(0), m_vbo_tex(0), m_vao(0), m_tex(0),
+  m_vbo_points(0), m_vbo_tex(0), m_vao(0),
+  m_pbo(0), m_tex(0),
   m_width(width), m_height(height)
 { m_pinfo.vertex = m_pinfo.fragment = m_pinfo.program = 0; }
   
@@ -45,6 +46,13 @@ bool TexturedQuad::init(const std::string& vshader,
   glBindBuffer (GL_ARRAY_BUFFER, m_vbo_tex);
   glVertexAttribPointer (1, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 
+
+  /* create an OpenGL buffer for pixel texture data */
+  glGenBuffers( 1, &m_pbo );
+  glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_pbo );
+  glBufferData( GL_PIXEL_UNPACK_BUFFER, m_width * m_height * 3, 
+      NULL, GL_DYNAMIC_DRAW );
+
   /* make ID for holding texture color data */
   glGenTextures(1, &m_tex);
   glBindTexture(GL_TEXTURE_2D, m_tex);
@@ -61,10 +69,20 @@ bool TexturedQuad::init(const std::string& vshader,
 
 
 TexturedQuad::~TexturedQuad(){
+  /* reset bindings */
+  glBindBuffer(GL_ARRAY_BUFFER,0);
+  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+  glBindVertexArray(0);
+  glBindTexture(GL_TEXTURE_2D,0);
+
+  /* delete buffers */
   glDeleteBuffers(1, &m_vbo_points);
   glDeleteBuffers(1, &m_vbo_tex);
+  glDeleteBuffers(1, &m_pbo);
   glDeleteVertexArrays(1, &m_vao);
   glDeleteTextures(1, &m_tex);
+
+  /* free shaders, program */
   freeProgram(m_pinfo);
 }
 

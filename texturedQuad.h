@@ -17,8 +17,8 @@ class TexturedQuad {
     /* program, shader IDs */
     shaderProgramInfo m_pinfo;
 
-    /* texture ID */
-    GLuint m_tex;
+    /* pixel buffer object, texture ID */
+    GLuint m_pbo, m_tex;
     
     int m_width, m_height;
 
@@ -27,6 +27,7 @@ class TexturedQuad {
       ~TexturedQuad();
       bool init(const std::string& vshader, const std::string& fshader);
       void draw();
+      inline GLuint getPBO(){ return m_pbo; }
 
 };
 
