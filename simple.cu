@@ -85,6 +85,7 @@ int main(int argc, char *argv[])  {
   // have the library run our Cuda animation
   my_display.AnimateComputation(animate_simple);
 
+  free(matrix); matrix=NULL;
   return 0;
 }
 
