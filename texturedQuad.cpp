@@ -48,32 +48,13 @@ bool TexturedQuad::init(const std::string& vshader,
   /* make ID for holding texture color data */
   glGenTextures(1, &m_tex);
   glBindTexture(GL_TEXTURE_2D, m_tex);
-  
-  GLubyte tdata[] ={ 
-    0xFF, 0x00, 0x00,
-    0x00, 0xFF, 0x00,
-    0x00, 0x00, /*byte alignment problems?, these are ignored*/ 
-    0x00, 0x00, 0xFF, 
-    0xFF, 0xFF, 0x00};
-  glTexStorage2D(GL_TEXTURE_2D, 2, GL_RGB8, 2, 2);
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 2, 
-      GL_RGB, GL_UNSIGNED_BYTE, tdata);
-
+  /* allocate space for texture, but don't read it in yet */
+  glTexStorage2D(GL_TEXTURE_2D, 2, GL_RGB8, m_width, m_height);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   m_pinfo = makeProgram(vshader, fshader);
   if(!m_pinfo.program){ return false; }
-
-  glUseProgram(m_pinfo.program);
-  /* find location of sampler in fragment shader */
-  GLint samplerLoc = glGetUniformLocation(m_pinfo.program, "texSampler");
-  /* tell sampler to sample from texture 0 */
-  glUniform1i(samplerLoc, 0);
-  /* set texture 0 to be current texture */
-  glActiveTexture(GL_TEXTURE0);
-  /* bind texture data from m_tex to current texture */
-  glBindTexture(GL_TEXTURE_2D, m_tex);
 
   return true;
 }
@@ -89,8 +70,19 @@ TexturedQuad::~TexturedQuad(){
 
 void TexturedQuad::draw(){
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glUseProgram (m_pinfo.program);
   glBindVertexArray (m_vao);
+  glUseProgram(m_pinfo.program);
+  /* find location of sampler in fragment shader */
+  GLint samplerLoc = glGetUniformLocation(m_pinfo.program, "texSampler");
+  /* tell sampler to sample from texture 0 */
+  glUniform1i(samplerLoc, 0);
+  /* set texture 0 to be current texture */
+  glActiveTexture(GL_TEXTURE0);
+  /* bind texture data from m_tex to current texture */
+  glBindTexture(GL_TEXTURE_2D, m_tex);
+  /* read from PIXEL_UNPACK_BUFFER */
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, 
+      GL_RGB, GL_UNSIGNED_BYTE, NULL);
   // draw points 0-3 from the currently bound VAO with current in-use shader
   glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
 }

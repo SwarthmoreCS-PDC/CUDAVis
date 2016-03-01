@@ -129,7 +129,7 @@ static void animate_simple(uchar3 *devPtr, void *my_data) {
       simple_data->dev_grid,  simple_data->cols); 
 
   // I needed to slow it down:
-  usleep(50000);
+  usleep(90000);
 
 }
 
