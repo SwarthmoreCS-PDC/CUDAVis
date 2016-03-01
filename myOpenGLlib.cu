@@ -41,8 +41,8 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
   if (GLEW_OK != err){
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
   }
-
-
+ 
+  /*
   // create an OpenGL buffer for pixel texture data
   glGenBuffers( 1, &bufferObj );
   glBindBuffer( GL_PIXEL_UNPACK_BUFFER, bufferObj );
@@ -53,6 +53,7 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
   // modify OpenGL bufferObj created above
   HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, bufferObj, 
         cudaGraphicsMapFlagsNone ) );
+*/
 
   if(! quad.init("tquad_v.glsl", "tquad_f.glsl") ) {
     fprintf(stderr, "Quad init oops\n");
@@ -112,7 +113,7 @@ void GPUDisplayData::animate(void) {
   size_t size;
   GPUDisplayData *obj = GPUDisplayData::get_gpu_obj();
 
-
+  /*
   HANDLE_ERROR( cudaGraphicsMapResources( 1, &obj->resource, NULL ) ) ;
   HANDLE_ERROR( cudaGraphicsResourceGetMappedPointer( (void**)&devPtr, 
         &size, obj->resource) );
@@ -121,6 +122,8 @@ void GPUDisplayData::animate(void) {
     obj->animate_function(devPtr, obj->gpu_data);
   }
   HANDLE_ERROR( cudaGraphicsUnmapResources( 1, &obj->resource, NULL ) );
+
+  */
 
   glClearColor( 1.0, 0.0, 0.0, 1.0 );
   glClear( GL_COLOR_BUFFER_BIT );
