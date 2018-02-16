@@ -6,7 +6,7 @@
 std::string readFile(const std::string& fname){
   std::stringstream ss; /* default is empty */
   std::ifstream file;
-  file.open(fname.c_str());
+  file.open(fname);
   if(!file){
     return ss.str();
   }
@@ -15,6 +15,7 @@ std::string readFile(const std::string& fname){
   file.close();
   return ss.str();
 }
+
 shaderProgramInfo makeProgram(
     const std::string& vsFileName, const std::string& fsFileName){
 
@@ -26,21 +27,21 @@ shaderProgramInfo makeProgram(
 
   shaderSource = readFile(vsFileName);
   if(shaderSource.empty()){
-    std::cerr << "Error reading vertex shader source: " << 
+    std::cerr << "Error reading vertex shader source: " <<
       vsFileName << std::endl;
     return pinfo;
   }
 
   id = makeShader(shaderSource, GL_VERTEX_SHADER);
   if(id == 0){
-    std::cerr << "Error compiling vertex shader: " << 
+    std::cerr << "Error compiling vertex shader: " <<
       vsFileName << std::endl;
   }
   else{ pinfo.vertex = id; }
 
   shaderSource = readFile(fsFileName);
   if(shaderSource.empty()){
-    std::cerr << "Error reading fragment shader source: " << 
+    std::cerr << "Error reading fragment shader source: " <<
       fsFileName << std::endl;
     return pinfo;
   }
@@ -75,20 +76,20 @@ GLuint makeShader(const std::string& src, GLenum type){
    glCompileShader(sh);
 
    glGetShaderiv(sh, GL_COMPILE_STATUS, &ok);
-   if(ok){ 
+   if(ok){
      return sh;
    }
 
    /* if error, print it */
-   GLint size = 0;    /* size of log */ 	
+   GLint size = 0;    /* size of log */
    GLsizei read = 0;  /* amount of info returned by log */
-   glGetShaderiv(sh, GL_INFO_LOG_LENGTH , &size);       
+   glGetShaderiv(sh, GL_INFO_LOG_LENGTH , &size);
    if (size > 1)
    {
      GLchar* compiler_log = new GLchar[size];
      glGetShaderInfoLog(sh, size, &read, compiler_log);
      std::cerr << "compiler_log:\n" << compiler_log << std::endl;
-     delete [] compiler_log; compiler_log=NULL;
+     delete [] compiler_log; compiler_log=nullptr;
    }
    return 0;
 

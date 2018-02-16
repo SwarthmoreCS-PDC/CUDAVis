@@ -13,9 +13,7 @@
  *
  */
 
-
-#ifndef __BOOK_H__
-#define __BOOK_H__
+#pragma once
 
 #include "handle_cuda_error.h"
 
@@ -28,14 +26,14 @@ void swap( T& a, T& b ) {
 }
 
 
-/* return a void* pointer to a buffer of length size bytes 
+/* return a void* pointer to a buffer of length size bytes
  * containing randomly generated data.
  * Each call to the function allocates and populates
  * a new random block. User assumes responsibility for freeing the
  * data block */
 void* big_random_block( int size );
 
-/* return a int* pointer to a buffer of length size integers 
+/* return a int* pointer to a buffer of length size integers
  * containing randomly generated data.
  * Each call to the function allocates and populates
  * a new random block. User assumes responsibility for freeing the
@@ -84,5 +82,3 @@ void destroy_thread( CUTThread thread );
 
 //Wait for multiple threads.
 void wait_for_threads( const CUTThread *threads, int num );
-
-#endif  // __BOOK_H__

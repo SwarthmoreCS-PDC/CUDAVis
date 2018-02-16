@@ -21,8 +21,7 @@
 //
 //  (newhall, 2011)
 //
-#ifndef __MYOPENGLLIB_H__
-#define __MYOPENGLLIB_H__
+#pragma once
 
 #include <stdio.h>
 
@@ -43,15 +42,15 @@ class GPUDisplayData {
 
     void *gpu_data;  // application-specific CUDA data that is used by
                      // application-spcific drawing functions (this
-                     // is just passed as param to user-supplied 
+                     // is just passed as param to user-supplied
                      // animate_function)
                      //
-    static GPUDisplayData  *gpu_disp;  // horrible kludge due to openGL 
-                     
-    // function pointers to user-supplied functions:  
+    static GPUDisplayData  *gpu_disp;  // horrible kludge due to openGL
+
+    // function pointers to user-supplied functions:
     // set an openGL bitmap value based on the program data values
     // an animation function will take a uchar3 provided by this
-    // class and the gpu_data field value which is a pointer to 
+    // class and the gpu_data field value which is a pointer to
     // som GPU side CUDA data that is used by the animate function
     void (*animate_function)(uchar3 *color_value, void *cuda_data);
     // a function that cleans up application-specific, CUDA-side,
@@ -60,32 +59,29 @@ class GPUDisplayData {
 
     // private functions:
     static void animate(void);  // function passed to openGLDisplay
-    static void keyboard(unsigned char key, int x, int y);  
-    static void close(void);  
+    static void keyboard(unsigned char key, int x, int y);
+    static void close(void);
 
     // second part of horrible kludge
     static GPUDisplayData *get_gpu_obj() { return gpu_disp; }
 
   public:
 
-    // the constructor takes dimensions of the openGL graphics display 
-    // object to create, and a pointer to a struct containing ptrs 
+    // the constructor takes dimensions of the openGL graphics display
+    // object to create, and a pointer to a struct containing ptrs
     // to application-specific CUDA data that the display function
     // needs in order to change bitmap values in the openGL object
     GPUDisplayData(int w, int h, void *data, const char *win_name);
     ~GPUDisplayData();
-    
+
     void RegisterExitFunction(void (*exit_func)(void* data)) {
       exit_function = exit_func;
-    } 
+    }
 
-    // this is the main loop, the caller passes in the 
+    // this is the main loop, the caller passes in the
     // animation function and an optional exit function
-    void AnimateComputation( 
+    void AnimateComputation(
         void (*anim_func)(uchar3 *, void *),
         void (*exit_func)(void *)=NULL);
 
 };
-
-
-#endif

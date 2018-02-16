@@ -12,15 +12,14 @@
  * your use of this NVIDIA software.
  *
  */
-
-
-#ifndef __CPU_ANIM_H__
-#define __CPU_ANIM_H__
-
-#include "gl_helper.h"
+#pragma once
 
 #include <iostream>
+#include <GL/glut.h>
+#include <GL/glext.h>
+#include <GL/glx.h>
 
+#define GET_PROC_ADDRESS( str ) glXGetProcAddress( (const GLubyte *)str )
 
 struct CPUAnimBitmap {
     unsigned char    *pixels;
@@ -122,7 +121,3 @@ struct CPUAnimBitmap {
         glutSwapBuffers();
     }
 };
-
-
-#endif  // __CPU_ANIM_H__
-

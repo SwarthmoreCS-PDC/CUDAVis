@@ -7,8 +7,8 @@
 // you register animation and clean-up events with this libary
 // and then run your animation.
 //
-// This example application doesn't do anything special, but it 
-// shows how to use the GPUDisplayData library and how to write animate 
+// This example application doesn't do anything special, but it
+// shows how to use the GPUDisplayData library and how to write animate
 // and clean_up functions to pass to GPUDisplayData.AnimateComputation.
 //
 // (newhall, 2016)
@@ -23,9 +23,9 @@
 
 static void animate_simple(uchar3 *disp, void *mycudadata);
 static void clean_up(void* mycudadata);
-__global__ void int_to_color( uchar3 *optr, 
+__global__ void int_to_color( uchar3 *optr,
     const int *my_cuda_data, int ncols);
-__global__ void  simplekernel(int *data, int ncols); 
+__global__ void  simplekernel(int *data, int ncols);
 
 
 
@@ -40,14 +40,14 @@ typedef struct my_cuda_data {
 
 
 int main(int argc, char *argv[])  {
- 
+
   // single var holds all program data.  This will be passed to the
-  // GPUDisplayData constructor 
+  // GPUDisplayData constructor
   my_cuda_data info;
   int* matrix;
   int rows=DIM;
   int cols=DIM;
-   
+
   matrix = (int*) malloc(rows*cols*sizeof(int));
   info.rows=rows;
   info.cols=cols;
@@ -55,15 +55,15 @@ int main(int argc, char *argv[])  {
 
   //simple_prog_data.cpu_grid=smat;
 
-  // The call to the constructor has to come before any calls to 
+  // The call to the constructor has to come before any calls to
   // cudaMalloc or other Cuda routines
-  // This is part of the reason why we are passing the address of 
+  // This is part of the reason why we are passing the address of
   // a struct with fields which are ptrs to cudaMalloc'ed space
-  // The other reason is that adding a level of indirection 
+  // The other reason is that adding a level of indirection
   // is the answer to every problem.
   GPUDisplayData my_display(info.cols, info.rows, &info, "Simple openGL-Cuda");
 
-  // initialize application data 
+  // initialize application data
   for(int i =0; i < info.rows; i++) {
     for(int j =0; j < info.cols; j++) {
       matrix[i*info.cols+j] = j;
@@ -71,16 +71,16 @@ int main(int argc, char *argv[])  {
   }
 
   // allocate memory space for our application data on the GPU
-  HANDLE_ERROR(cudaMalloc((void**)&info.dev_grid, 
+  HANDLE_ERROR(cudaMalloc((void**)&info.dev_grid,
         sizeof(int)*info.rows*info.cols) ) ;
 
   // copy the initial data to the GPU
-  HANDLE_ERROR (cudaMemcpy(info.dev_grid, matrix, 
+  HANDLE_ERROR (cudaMemcpy(info.dev_grid, matrix,
         sizeof(int)*info.rows*info.cols, cudaMemcpyHostToDevice) ) ;
 
-  // register a clean-up function on exit that will call cudaFree 
+  // register a clean-up function on exit that will call cudaFree
   // on any cudaMalloc'ed space
-  my_display.RegisterExitFunction(clean_up); 
+  my_display.RegisterExitFunction(clean_up);
 
   // have the library run our Cuda animation
   my_display.AnimateComputation(animate_simple);
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])  {
 // cleanup function passed to AnimateComputatin method.
 // it is called when the program exits and should clean up
 // all cudaMalloc'ed state.
-// Your clean-up function's prototype must match this, which is 
+// Your clean-up function's prototype must match this, which is
 // why simple_prog_data needs to be a global
 static void clean_up(void* mycudadata) {
   my_cuda_data* info = (my_cuda_data*) mycudadata;
@@ -101,53 +101,53 @@ static void clean_up(void* mycudadata) {
 
 }
 
-// amimate function passed to AnimateComputation: 
+// amimate function passed to AnimateComputation:
 // this function will be called by openGL's dislplay function.
 // It can contain code that runs on the CPU and also calls to
 // to CUDA kernel code to do a computation and to change the
 // display the results using openGL...you need to change the
 // display color values based on the application values
-// 
+//
 // devPtr: is pointer into openGL buffer of rgba values (but
 //         the field names are x,y,z,w
-// my_data: is pointer to our cuda data that we passed into the 
+// my_data: is pointer to our cuda data that we passed into the
 //          constructor
-// 
+//
 // your animate function prototype must match this one:
 static void animate_simple(uchar3 *devPtr, void *my_data) {
 
   my_cuda_data *simple_data = (my_cuda_data *)my_data;
-  dim3 blocks(simple_data->cols/8, simple_data->rows/8, 1); 
-  dim3 threads_block(8, 8, 1); 
+  dim3 blocks(simple_data->cols/8, simple_data->rows/8, 1);
+  dim3 threads_block(8, 8, 1);
 
-  // comment out the for loop to do a display update every 
+  // comment out the for loop to do a display update every
   // execution of simplekernel
-  for(int i=0; i < 90; i++) 
+  for(int i=0; i < 90; i++)
     simplekernel<<<blocks,threads_block>>>(
-        simple_data->dev_grid, simple_data->cols); 
+        simple_data->dev_grid, simple_data->cols);
 
-  int_to_color<<<blocks,threads_block>>>(devPtr, 
-      simple_data->dev_grid,  simple_data->cols); 
+  int_to_color<<<blocks,threads_block>>>(devPtr,
+      simple_data->dev_grid,  simple_data->cols);
 
   // I needed to slow it down:
   usleep(90000);
 
 }
 
-// a kernel to set the color the opengGL display object based 
+// a kernel to set the color the opengGL display object based
 // on the cuda data value
-//  
-//  optr: is an array of openGL RGB pixels, each is a 
-//        4-tuple (x:red, y:green, z:blue, w:opacity) 
+//
+//  optr: is an array of openGL RGB pixels, each is a
+//        4-tuple (x:red, y:green, z:blue, w:opacity)
 //  my_cuda_data: is cuda 2D array of ints
 __global__ void int_to_color( uchar3 *optr, const int *my_cuda_data, int cols ) {
 
     // get this thread's block position to map into
     // location in opt and my_cuda_data
     // the x and y values depend on how you parallelize the
-    // kernel (<<<blocks, threads>>>).  
-    int x = blockIdx.x * blockDim.x + threadIdx.x;  
-    int y = blockIdx.y * blockDim.y + threadIdx.y;  
+    // kernel (<<<blocks, threads>>>).
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
     int offset = x + y*cols;
 
     // change this pixel's color value based on some strange
@@ -161,11 +161,9 @@ __global__ void int_to_color( uchar3 *optr, const int *my_cuda_data, int cols ) 
 //  data: a "2D" array of int values
 __global__ void  simplekernel(int *data, int ncols) {
 
-    int x = blockIdx.x * blockDim.x + threadIdx.x;  
-    int y = blockIdx.y * blockDim.y + threadIdx.y;  
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
     int offset = x + y*ncols;
 
     data[offset] = (data[offset] + 10)%1000;
 }
-
-

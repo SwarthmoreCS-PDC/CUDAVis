@@ -1,20 +1,19 @@
-#ifndef TIMER_GPU_H
-#define TIMER_GPU_H
+#pragma once
 
 #include "timerBase.h"
 #include "cuda.h"
 
-/* Time events on GPU side */
+/* Time events on GPU side
+   See timerBase for method description
+ */
 class GPUTimer: public TimerBase {
 	private:
 		cudaEvent_t startTime, stopTime;
 	public:
 		GPUTimer();
 		~GPUTimer();
-		void start(); 
+		void start();
 		void stop();
-		void print(); 
-		float elapsed(); 
+		void print();
+		float elapsed();
 };
-
-#endif

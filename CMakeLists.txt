@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-set(CMAKE_CXX_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "--std=c++11 -g -Wall")
 
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_modules) #for FindGLEW.cmake
 
@@ -14,7 +14,7 @@ find_package(GLUT REQUIRED)
 find_package(Threads REQUIRED)
 
 #for CUDA
-find_package(CUDA QUIET REQUIRED) 
+find_package(CUDA QUIET REQUIRED)
 cuda_include_directories(${CUDA_INC} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${CUDA_SDK}/lib/)
 
@@ -23,10 +23,10 @@ include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
 include_directories(./)
 
 
-set(UTIL_HEADERS 
+set(UTIL_HEADERS
   timerBase.h timerCPU.h
   texturedQuad.h
-  shaderHelpers.h 
+  shaderHelpers.h
   )
 
 set(UTIL_SRC
@@ -43,7 +43,7 @@ set(GPU_UTIL_HEADERS
 
 set(GPU_UTIL_SRC
   handle_cuda_error.cu
-  timerGPU.cu 
+  timerGPU.cu
   myOpenGLlib.cu
   )
 
@@ -57,12 +57,12 @@ set(GPROG simple)
 
 foreach(PROG ${GPROG})
   cuda_add_executable(${PROG} ${PROG}.cu ${HDRS})
-  target_link_libraries(${PROG} 
+  target_link_libraries(${PROG}
     ${GLLIBS}  m ${MYLIBS})
 endforeach()
 symlink_data(shaders *.glsl)
 
 set(RIPPHEADERS cpu_anim.h cpu_anim.h)
 cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
-target_link_libraries(ripple  
+target_link_libraries(ripple
     ${GLLIBS} m ${MYLIBS})

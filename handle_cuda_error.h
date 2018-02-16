@@ -1,12 +1,11 @@
-#ifndef _HANDLE_CUDA_ERROR_H
-#define _HANDLE_CUDA_ERROR_H
+#pragma once
 
 #include <cstdio>
 #include "cuda.h"
 
 /* Check if return status (err) is not cudaSuccess. If a
- * real error occurred, print error string and exit program 
- * with EXIT_FAILURE 
+ * real error occurred, print error string and exit program
+ * with EXIT_FAILURE
  *
  * err : error code returned by cuda function
  * file: source file name of line containing HandleError call
@@ -25,5 +24,3 @@ void HandleError(cudaError_t err, const char *file, int line);
     exit( EXIT_FAILURE );\
 	}\
 }
-
-#endif

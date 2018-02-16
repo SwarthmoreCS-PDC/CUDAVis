@@ -1,5 +1,4 @@
-#ifndef TIMER_BASE_H
-#define TIMER_BASE_H
+#pragma once
 
 #include <sys/time.h>
 
@@ -9,9 +8,7 @@ class TimerBase {
 		virtual void start() = 0;    //Start a timer
 		virtual void stop() = 0;     //Stop timer
 		//Print time in seconds between last start and stop
-		virtual void print() = 0;    
+		virtual void print() = 0;
 		//Get elapsed time from last start until now in seconds
 		virtual float elapsed() = 0;
 };
-
-#endif
