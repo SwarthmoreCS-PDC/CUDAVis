@@ -11,7 +11,7 @@
 // shows how to use the GPUDisplayData library and how to write animate
 // and clean_up functions to pass to GPUDisplayData.AnimateComputation.
 //
-// (newhall, 2016)
+// (danner, 2018)
 
 #include <unistd.h>
 #include <stdio.h>
@@ -26,11 +26,18 @@ static void animate_ripple(uchar3 *disp, void *mycudadata);
 static void clean_up(void* mycudadata);
 __global__ void  ripple(uchar3 *data, int size, int ticks);
 
-// if your program needs more GPU data, use a struct
-// with fields for each value needed.
+/* The GPUDisplayData class will automatically create
+   an RGB buffer of a given width and height for you on
+   the GPU. Writing to this buffer in a CUDA kernel will
+   modify the image in the animation loop.
+
+   If your program needs additional GPU data, or dynamically
+   allocated CPU data, use the following struct to
+   store the needed information.
+*/
 typedef struct my_cuda_data {
-  int size;
-  int ticks;
+  int size;  // width and height of image
+  int ticks; // a time tick for updating the animation
 } my_cuda_data;
 
 
@@ -42,9 +49,6 @@ int main(int argc, char *argv[])  {
   info.size=DIM;
   info.ticks=0;
 
-
-  //simple_prog_data.cpu_grid=smat;
-
   // The call to the constructor has to come before any calls to
   // cudaMalloc or other Cuda routines
   // This is part of the reason why we are passing the address of
@@ -53,11 +57,11 @@ int main(int argc, char *argv[])  {
   // is the answer to every problem.
   GPUDisplayData my_display(info.size, info.size, &info, "Simple openGL-Cuda");
 
-  // register a clean-up function on exit that will call cudaFree
-  // on any cudaMalloc'ed space
+  // register a clean-up function on exit that will free
+  // any dynamically allocated memory on the GPU or the CPU
   my_display.RegisterExitFunction(clean_up);
 
-  // have the library run our Cuda animation
+  // have the library run our CUDA animation
   my_display.AnimateComputation(animate_ripple);
   return 0;
 }
@@ -90,6 +94,10 @@ static void animate_ripple(uchar3 *devPtr, void *my_data) {
   dim3 blocks(data->size/tdim, data->size/tdim);
   dim3 threads_block(tdim, tdim);
 
+  /* This example just needs a time tick to generate an image
+     directly in the GPU pixel buffer on the fly. No additional
+     GPU pointers are needed from the my_cuda_data struct.
+     devPtr is created and passed by the GPUDisplayData class */
   ripple<<<blocks,threads_block>>>(devPtr, data->size, data->ticks);
   data->ticks += 2;
 }
@@ -100,7 +108,7 @@ __global__ void ripple( uchar3* optr, int size, int ticks ) {
     int y = threadIdx.y + blockIdx.y * blockDim.y;
     int offset = x + y * size;
 
-    // now calculate the value at that position
+    // compute distance from center of image
     float fx = x - size/2;
     float fy = y - size/2;
     float d = sqrtf( fx * fx + fy * fy );
