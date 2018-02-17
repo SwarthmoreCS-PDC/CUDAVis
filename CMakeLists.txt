@@ -58,11 +58,11 @@ set(GPROG simple)
 foreach(PROG ${GPROG})
   cuda_add_executable(${PROG} ${PROG}.cu ${HDRS})
   target_link_libraries(${PROG}
-    ${GLLIBS}  m ${MYLIBS})
+  ${MYLIBS} ${GLLIBS} m )
 endforeach()
 symlink_data(shaders *.glsl)
 
 set(RIPPHEADERS cpu_anim.h cpu_anim.h)
 cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
 target_link_libraries(ripple
-    ${GLLIBS} m ${MYLIBS})
+ ${MYLIBS} ${GLLIBS} m )
