@@ -17,7 +17,7 @@ find_package(Threads REQUIRED)
 find_package(CUDA QUIET REQUIRED)
 cuda_include_directories(${CUDA_INC} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${CUDA_SDK}/lib/)
-# CUDA 8 gets grumpy about deprecated archs 
+# CUDA 8 gets grumpy about deprecated archs
 if (CUDA_VERSION VERSION_GREATER "7.5")
   #CMake 3.7
   #CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS Auto)
@@ -58,7 +58,7 @@ cuda_add_library(mycudautil ${GPU_UTIL_HEADERS} ${GPU_UTIL_SRC})
 
 set(MYLIBS mycudautil myutil)
 set(GLLIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLEW_LIBRARY})
-set(GPROG simple)
+set(GPROG simple ripple)
 
 
 foreach(PROG ${GPROG})
@@ -67,8 +67,3 @@ foreach(PROG ${GPROG})
   ${MYLIBS} ${GLLIBS} m )
 endforeach()
 symlink_data(shaders *.glsl)
-
-set(RIPPHEADERS cpu_anim.h cpu_anim.h)
-cuda_add_executable(ripple ripple.cu ${RIPHEADERS})
-target_link_libraries(ripple
- ${MYLIBS} ${GLLIBS} m )

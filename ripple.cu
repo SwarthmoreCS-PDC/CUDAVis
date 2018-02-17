@@ -1,74 +1,114 @@
-/*
- * Copyright 1993-2010 NVIDIA Corporation.  All rights reserved.
- *
- * NVIDIA Corporation and its licensors retain all intellectual property and 
- * proprietary rights in and to this software and related documentation. 
- * Any use, reproduction, disclosure, or distribution of this software 
- * and related documentation without an express license agreement from
- * NVIDIA Corporation is strictly prohibited.
- *
- * Please refer to the applicable NVIDIA end user license agreement (EULA) 
- * associated with this source code for terms and conditions that govern 
- * your use of this NVIDIA software.
- * 
- */
+// a simple example of how to use myopengllib library to
+// animate a cuda computation
+//
+// Most of the openGL-Cuda interoperability stuff is hidden
+// in the GPUDisplayData class.  However, you need to think
+// a little bit about writing an event driven program since
+// you register animation and clean-up events with this libary
+// and then run your animation.
+//
+// This example application doesn't do anything special, but it
+// shows how to use the GPUDisplayData library and how to write animate
+// and clean_up functions to pass to GPUDisplayData.AnimateComputation.
+//
+// (newhall, 2016)
 
+#include <unistd.h>
+#include <stdio.h>
+#include "myOpenGLlib.h"
+#include "handle_cuda_error.h"
 
-#include "cuda.h"
-#include "book.h"
-#include "cpu_anim.h"
-
+// try changing this to different powers of 2
 #define DIM 1024
 #define PI 3.1415926535897932f
 
-__global__ void kernel( unsigned char *ptr, int ticks ) {
+static void animate_ripple(uchar3 *disp, void *mycudadata);
+static void clean_up(void* mycudadata);
+__global__ void  ripple(uchar3 *data, int size, int ticks);
+
+// if your program needs more GPU data, use a struct
+// with fields for each value needed.
+typedef struct my_cuda_data {
+  int size;
+  int ticks;
+} my_cuda_data;
+
+
+int main(int argc, char *argv[])  {
+
+  // single var holds all program data.  This will be passed to the
+  // GPUDisplayData constructor
+  my_cuda_data info;
+  info.size=DIM;
+  info.ticks=0;
+
+
+  //simple_prog_data.cpu_grid=smat;
+
+  // The call to the constructor has to come before any calls to
+  // cudaMalloc or other Cuda routines
+  // This is part of the reason why we are passing the address of
+  // a struct with fields which are ptrs to cudaMalloc'ed space
+  // The other reason is that adding a level of indirection
+  // is the answer to every problem.
+  GPUDisplayData my_display(info.size, info.size, &info, "Simple openGL-Cuda");
+
+  // register a clean-up function on exit that will call cudaFree
+  // on any cudaMalloc'ed space
+  my_display.RegisterExitFunction(clean_up);
+
+  // have the library run our Cuda animation
+  my_display.AnimateComputation(animate_ripple);
+  return 0;
+}
+
+// cleanup function passed to AnimateComputation method.
+// it is called when the program exits and should clean up
+// all dynamically allocated memory in the my_cuda_data struct.
+// Your clean-up function's prototype must match this
+static void clean_up(void* mycudadata) {
+  /* do nothing */
+}
+
+// amimate function passed to AnimateComputation:
+// this function will be called by openGL's dislplay function.
+// It can contain code that runs on the CPU and also calls to
+// to CUDA kernel code to do a computation and to change the
+// display the results using openGL...you need to change the
+// display color values based on the application values
+//
+// devPtr: is pointer into openGL buffer of rgb values (but
+//         the field names are x,y,z)
+// my_data: is pointer to our cuda data that we passed into the
+//          constructor
+//
+// your animate function prototype must match this one:
+static void animate_ripple(uchar3 *devPtr, void *my_data) {
+
+  int tdim = 8;
+  my_cuda_data *data = (my_cuda_data *)my_data;
+  dim3 blocks(data->size/tdim, data->size/tdim);
+  dim3 threads_block(tdim, tdim);
+
+  ripple<<<blocks,threads_block>>>(devPtr, data->size, data->ticks);
+  data->ticks += 2;
+}
+
+__global__ void ripple( uchar3* optr, int size, int ticks ) {
     // map from threadIdx/BlockIdx to pixel position
     int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
-    int offset = x + y * blockDim.x * gridDim.x;
+    int offset = x + y * size;
 
     // now calculate the value at that position
-    float fx = x - DIM/2;
-    float fy = y - DIM/2;
+    float fx = x - size/2;
+    float fy = y - size/2;
     float d = sqrtf( fx * fx + fy * fy );
     unsigned char grey = (unsigned char)(128.0f + 127.0f *
                                          cos(d/10.0f - ticks/7.0f) /
                                          (d/10.0f + 1.0f));
-    ptr[offset*4 + 0] = grey;
-    ptr[offset*4 + 1] = grey;
-    ptr[offset*4 + 2] = grey;
-    ptr[offset*4 + 3] = 255;
-}
+    optr[offset].x = grey;
+    optr[offset].y = grey;
+    optr[offset].z = grey;
 
-struct DataBlock {
-    unsigned char   *dev_bitmap;
-    CPUAnimBitmap  *bitmap;
-};
-
-void generate_frame( DataBlock *d, int ticks ) {
-    dim3    blocks(DIM/16,DIM/16);
-    dim3    threads(16,16);
-    kernel<<<blocks,threads>>>( d->dev_bitmap, ticks );
-
-    HANDLE_ERROR( cudaMemcpy( d->bitmap->get_ptr(),
-                              d->dev_bitmap,
-                              d->bitmap->image_size(),
-                              cudaMemcpyDeviceToHost ) );
-}
-
-// clean up memory allocated on the GPU
-void cleanup( DataBlock *d ) {
-    HANDLE_ERROR( cudaFree( d->dev_bitmap ) );
-}
-
-int main( void ) {
-    DataBlock   data;
-    CPUAnimBitmap  bitmap( DIM, DIM, &data );
-    data.bitmap = &bitmap;
-
-    HANDLE_ERROR( cudaMalloc( (void**)&data.dev_bitmap,
-                              bitmap.image_size() ) );
-
-    bitmap.anim_and_exit( (void (*)(void*,int))generate_frame,
-                          (void (*)(void*))cleanup );
 }
