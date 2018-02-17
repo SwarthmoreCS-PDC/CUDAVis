@@ -1,4 +1,4 @@
-// a simple example of how to use myopengllib library to 
+// a simple example of how to use myopengllib library to
 // animate a cuda computation
 //
 // Most of the openGL-Cuda interoperability stuff is hidden
@@ -84,21 +84,18 @@ int main(int argc, char *argv[])  {
 
   // have the library run our Cuda animation
   my_display.AnimateComputation(animate_simple);
-
-  free(matrix); matrix=NULL;
   return 0;
 }
 
-// cleanup function passed to AnimateComputatin method.
+// cleanup function passed to AnimateComputation method.
 // it is called when the program exits and should clean up
-// all cudaMalloc'ed state.
-// Your clean-up function's prototype must match this, which is
-// why simple_prog_data needs to be a global
+// all dynamically allocated memory in the my_cuda_data struct.
+// Your clean-up function's prototype must match this
 static void clean_up(void* mycudadata) {
   my_cuda_data* info = (my_cuda_data*) mycudadata;
   HANDLE_ERROR(cudaFree(info->dev_grid) );
-  free( info->cpu_grid );
-
+  info->dev_grid=NULL;
+  free( info->cpu_grid ); info->cpu_grid=NULL;
 }
 
 // amimate function passed to AnimateComputation:
@@ -108,8 +105,8 @@ static void clean_up(void* mycudadata) {
 // display the results using openGL...you need to change the
 // display color values based on the application values
 //
-// devPtr: is pointer into openGL buffer of rgba values (but
-//         the field names are x,y,z,w
+// devPtr: is pointer into openGL buffer of rgb values (but
+//         the field names are x,y,z)
 // my_data: is pointer to our cuda data that we passed into the
 //          constructor
 //
@@ -138,7 +135,7 @@ static void animate_simple(uchar3 *devPtr, void *my_data) {
 // on the cuda data value
 //
 //  optr: is an array of openGL RGB pixels, each is a
-//        4-tuple (x:red, y:green, z:blue, w:opacity)
+//        3-tuple (x:red, y:green, z:blue)
 //  my_cuda_data: is cuda 2D array of ints
 __global__ void int_to_color( uchar3 *optr, const int *my_cuda_data, int cols ) {
 
