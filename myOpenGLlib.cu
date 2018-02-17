@@ -1,5 +1,5 @@
-// A class for openGL animation of CUDA applications 
-// 
+// A class for openGL animation of CUDA applications
+//
 //
 #include <GL/glew.h>
 #include <GL/freeglut.h>
@@ -14,21 +14,21 @@
 GPUDisplayData  *GPUDisplayData::gpu_disp = 0;
 
 
-// the constructor takes dimensions of the openGL graphics display 
-// object to create, and a pointer to a struct containing ptrs 
+// the constructor takes dimensions of the openGL graphics display
+// object to create, and a pointer to a struct containing ptrs
 // to application-specific CUDA data that the display function
 // needs in order to change bitmap values in the openGL object
-GPUDisplayData::GPUDisplayData(int w, int h, void *data, 
+GPUDisplayData::GPUDisplayData(int w, int h, void *data,
     const char *winname ="Animation") :
   resource(NULL), width(w), height(h), quad(w,h),
   gpu_data(data), animate_function(NULL), exit_function(NULL)
 {
   // init glut
-  int argc = 0;   // bogus args for glutInit 
+  int argc = 0;   // bogus args for glutInit
   char *argv = NULL;
   glutInit(&argc, &argv);
-  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA ); 
-  glutInitWindowSize( width, height ); 
+  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
+  glutInitWindowSize( width, height );
   glutCreateWindow( winname );
   // Note: glutSetOption is only available with freeglut
   // Returns control from glutMainLoop to caller when user
@@ -41,33 +41,35 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
   if (GLEW_OK != err){
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
   }
- 
+
   if(! quad.init("tquad_v.glsl", "tquad_f.glsl") ) {
     fprintf(stderr, "Quad init oops\n");
   }
-  
-  // Create a resource handle that allows CUDA to 
+
+  // Create a resource handle that allows CUDA to
   // modify OpenGL PBO created by quad
-  HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, quad.getPBO(), 
+  HANDLE_ERROR( cudaGraphicsGLRegisterBuffer( &resource, quad.getPBO(),
         cudaGraphicsMapFlagsNone ) );
-  
+
   // static weirdness
   gpu_disp = this;
 }
 
 
 GPUDisplayData::~GPUDisplayData() {
-
   if (resource){
     printf("resource should have been released by now\n");
     HANDLE_ERROR( cudaGraphicsUnregisterResource(resource) );
     resource = NULL;
   }
+  if(exit_function){
+    exit_function(gpu_data);
+  }
 }
 
 
-void GPUDisplayData::AnimateComputation( 
-    void (*anim_func)(uchar3 *, void *), void (*exit_func)(void *)) 
+void GPUDisplayData::AnimateComputation(
+    void (*anim_func)(uchar3 *, void *), void (*exit_func)(void *))
 {
 
   animate_function = anim_func;;
@@ -89,15 +91,15 @@ void GPUDisplayData::AnimateComputation(
 void GPUDisplayData::animate(void) {
   uchar3 *devPtr;
   size_t size;
-  GPUDisplayData *obj = GPUDisplayData::get_gpu_obj();
+  GPUDisplayData *obj = GPUDisplayData::gpu_disp;
 
   if (!obj->resource) {return;}
 
   HANDLE_ERROR( cudaGraphicsMapResources( 1, &obj->resource, NULL ) ) ;
-  HANDLE_ERROR( cudaGraphicsResourceGetMappedPointer( (void**)&devPtr, 
+  HANDLE_ERROR( cudaGraphicsResourceGetMappedPointer( (void**)&devPtr,
         &size, obj->resource) );
 
-  if(obj->animate_function) { 
+  if(obj->animate_function) {
     obj->animate_function(devPtr, obj->gpu_data);
   }
   HANDLE_ERROR( cudaGraphicsUnmapResources( 1, &obj->resource, NULL ) );
@@ -118,7 +120,7 @@ void GPUDisplayData::keyboard(unsigned char key, int x, int y){
 }
 
 void GPUDisplayData::close(){
-    GPUDisplayData *obj = GPUDisplayData::get_gpu_obj();
+    GPUDisplayData *obj = GPUDisplayData::gpu_disp;
     if (obj->resource){
       HANDLE_ERROR( cudaGraphicsUnregisterResource(obj->resource) );
       obj->resource = NULL;

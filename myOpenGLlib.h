@@ -1,4 +1,4 @@
-// This is a class for doing openGL GPU animations of CUDA 
+// This is a class for doing openGL GPU animations of CUDA
 // 2D grid applications
 //
 // It hides all/most of the openGL code, and exports to the user
@@ -38,14 +38,14 @@ class GPUDisplayData {
     cudaGraphicsResource *resource;
     int width;    // used to create openGL bufferObj of some dimension
     int height;
-    TexturedQuad quad;
+    TexturedQuad quad; // A textured square containing the image pixels
 
     void *gpu_data;  // application-specific CUDA data that is used by
                      // application-spcific drawing functions (this
                      // is just passed as param to user-supplied
                      // animate_function)
                      //
-    static GPUDisplayData  *gpu_disp;  // horrible kludge due to openGL
+    static GPUDisplayData  *gpu_disp;  // horrible kludge due to glut
 
     // function pointers to user-supplied functions:
     // set an openGL bitmap value based on the program data values
@@ -57,13 +57,12 @@ class GPUDisplayData {
     // allocations
     void (*exit_function)(void* cuda_data);
 
-    // private functions:
+    /* private static functions. These are all static because of how
+       glut handles passing of display, keyboard and close functions
+       in a very non C++-friendly way. */
     static void animate(void);  // function passed to openGLDisplay
     static void keyboard(unsigned char key, int x, int y);
     static void close(void);
-
-    // second part of horrible kludge
-    static GPUDisplayData *get_gpu_obj() { return gpu_disp; }
 
   public:
 
