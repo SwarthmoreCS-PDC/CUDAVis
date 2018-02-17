@@ -17,6 +17,12 @@ find_package(Threads REQUIRED)
 find_package(CUDA QUIET REQUIRED)
 cuda_include_directories(${CUDA_INC} ${CMAKE_CURRENT_SOURCE_DIR})
 link_directories(${CUDA_SDK}/lib/)
+# CUDA 8 gets grumpy about deprecated archs 
+if (CUDA_VERSION VERSION_GREATER "7.5")
+  #CMake 3.7
+  #CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS Auto)
+  LIST(APPEND CUDA_NVCC_FLAGS "-arch=sm_30")
+endif()
 
 #get symlink_data macro
 include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
