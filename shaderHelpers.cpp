@@ -6,7 +6,7 @@
 std::string readFile(const std::string& fname){
   std::stringstream ss; /* default is empty */
   std::ifstream file;
-  file.open(fname);
+  file.open(fname.c_str());
   if(!file){
     return ss.str();
   }
@@ -89,7 +89,7 @@ GLuint makeShader(const std::string& src, GLenum type){
      GLchar* compiler_log = new GLchar[size];
      glGetShaderInfoLog(sh, size, &read, compiler_log);
      std::cerr << "compiler_log:\n" << compiler_log << std::endl;
-     delete [] compiler_log; compiler_log=nullptr;
+     delete [] compiler_log; compiler_log=NULL;
    }
    return 0;
 
