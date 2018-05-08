@@ -58,7 +58,7 @@ cuda_add_library(mycudautil ${GPU_UTIL_HEADERS} ${GPU_UTIL_SRC})
 
 set(MYLIBS mycudautil myutil)
 set(GLLIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLEW_LIBRARY})
-set(GPROG simple ripple)
+set(GPROG simple ripple julia)
 
 
 foreach(PROG ${GPROG})
