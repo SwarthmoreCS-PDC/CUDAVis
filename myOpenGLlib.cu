@@ -21,6 +21,7 @@ GPUDisplayData  *GPUDisplayData::gpu_disp = 0;
 GPUDisplayData::GPUDisplayData(int w, int h, void *data,
     const char *winname ="Animation") :
   resource(NULL), width(w), height(h), quad(w,h),
+  paused(false),
   gpu_data(data), animate_function(NULL), exit_function(NULL)
 {
   // init glut
@@ -113,9 +114,19 @@ void GPUDisplayData::animate(void) {
 }
 
 void GPUDisplayData::keyboard(unsigned char key, int x, int y){
+  GPUDisplayData *obj = GPUDisplayData::gpu_disp;
   /* allow safe quit with q */
   if(key=='q'){
     glutLeaveMainLoop();
+  }
+  if(key==' '){
+    obj->paused = !obj->paused;
+    if (obj->paused){
+      glutIdleFunc(NULL);
+    }
+    else{
+      glutIdleFunc(animate);
+    }
   }
 }
 

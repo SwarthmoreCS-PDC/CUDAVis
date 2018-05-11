@@ -39,6 +39,7 @@ class GPUDisplayData {
     int width;    // used to create openGL bufferObj of some dimension
     int height;
     TexturedQuad quad; // A textured square containing the image pixels
+    bool paused; // Flag to indicate if animation is paused
 
     void *gpu_data;  // application-specific CUDA data that is used by
                      // application-spcific drawing functions (this
