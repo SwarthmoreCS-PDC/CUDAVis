@@ -8,7 +8,7 @@
 // and then run your animation.
 //
 // This example creates a complex number struct and uses it
-// to generate and optionally animate Julia Set fractals. 
+// to generate and optionally animate Julia Set fractals.
 //
 // (danner, 2018)
 
@@ -17,6 +17,7 @@
 #include <math.h>
 #include "myOpenGLlib.h"
 #include "handle_cuda_error.h"
+#include "timerGPU.h"
 
 // try changing this to different powers of 2
 #define DIM 1024
@@ -103,7 +104,11 @@ static void animate_julia(uchar3 *devPtr, void *my_data) {
      devPtr is created and passed by the GPUDisplayData class */
   float im = data->im+0.2*sin(data->ticks/20.);
   float re = data->re+0.3*cos(data->ticks/17.);
+  GPUTimer timer;
+  timer.start();
   julia_kernel<<<blocks,1>>>(devPtr, data->size, re, im);
+  float msec = timer.elapsed()*1000;
+  printf("Frame generation time: %7.2f ms\r", msec); 
   data->ticks += 1;
 
 }
