@@ -29,6 +29,16 @@ make -j8
 
 After creating the `build` directory and running `cmake` once, you should only need to run `make -j8` in the build directory if you modify the files.
 
+# Writing Your Own Animation
+
+To wirte your own animation, follow the general outline provided in the examples [ripple.cu](ripple.cu), [simple.cu](simple.cu), and [julia.cu](julia.cu). The primary step is to write an animation function, e.g.,
+
+```C
+static void animate_ripple(uchar3 *disp, void *mycudadata);
+```
+
+
+
 # References
 
 More details regarding how we use this project in courses at Swarthmore College in Computer Science can be found at our EduPar'18 site https://www.cs.swarthmore.edu/edupar18/
