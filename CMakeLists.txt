@@ -44,13 +44,13 @@ set(UTIL_SRC
 set(GPU_UTIL_HEADERS
   handle_cuda_error.h
   timerBase.h timerGPU.h
-  myOpenGLlib.h
+  gpuDisplayData.h
   )
 
 set(GPU_UTIL_SRC
   handle_cuda_error.cu
   timerGPU.cu
-  myOpenGLlib.cu
+  gpuDisplayData.cu
   )
 
 add_library(myutil ${UTIL_HEADERS} ${UTIL_SRC})
@@ -58,7 +58,7 @@ cuda_add_library(mycudautil ${GPU_UTIL_HEADERS} ${GPU_UTIL_SRC})
 
 set(MYLIBS mycudautil myutil)
 set(GLLIBS ${GLUT_LIBRARY} ${OPENGL_LIBRARY} ${GLEW_LIBRARY})
-set(GPROG simple ripple julia)
+set(GPROG ripple julia userBuffer)
 
 
 foreach(PROG ${GPROG})

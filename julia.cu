@@ -1,4 +1,4 @@
-// a simple example of how to use myopengllib library to
+// a simple example of how to use gpuDisplayData library to
 // animate a cuda computation
 //
 // Most of the openGL-Cuda interoperability stuff is hidden
@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <math.h>
-#include "myOpenGLlib.h"
+#include "gpuDisplayData.h"
 #include "handle_cuda_error.h"
 #include "timerGPU.h"
 
