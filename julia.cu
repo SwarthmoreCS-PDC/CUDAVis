@@ -107,8 +107,7 @@ static void animate_julia(uchar3 *devPtr, void *my_data) {
   GPUTimer timer;
   timer.start();
   julia_kernel<<<blocks,1>>>(devPtr, data->size, re, im);
-  float msec = timer.elapsed()*1000;
-  printf("Frame generation time: %7.2f ms\r", msec); 
+  printf("Frame generation time: %7.2f ms\r", timer.elapsed());
   data->ticks += 1;
 
 }

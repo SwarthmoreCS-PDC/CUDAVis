@@ -1,6 +1,5 @@
 #include <iostream>
 #include <GL/glew.h>
-
 #include "texturedQuad.h"
 #include "shaderHelpers.h"
 
@@ -9,20 +8,20 @@
  *   |    |
  *   2 -- 4
  */
-const float TexturedQuad::sm_points[] = { 
+const float TexturedQuad::sm_points[] = {
   -1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, 1.0f, -1.0f };
 
 /* tex coords are in [0,1]x[0,1] origin in lower left */
-const float TexturedQuad::sm_texcoords[] = { 
+const float TexturedQuad::sm_texcoords[] = {
    0.0f, 1.0f,  0.0f,  0.0f, 1.0f, 1.0f, 1.0f,  0.0f };
 
 
-TexturedQuad::TexturedQuad(int width, int height): 
+TexturedQuad::TexturedQuad(int width, int height):
   m_vbo_points(0), m_vbo_tex(0), m_vao(0),
   m_pbo(0), m_tex(0),
   m_width(width), m_height(height)
 { m_pinfo.vertex = m_pinfo.fragment = m_pinfo.program = 0; }
-  
+
 
 bool TexturedQuad::init(const std::string& vshader,
                         const std::string& fshader) {
@@ -40,7 +39,7 @@ bool TexturedQuad::init(const std::string& vshader,
   /* vertex shader points in position 0 */
   glEnableVertexAttribArray(0);
   glBindBuffer (GL_ARRAY_BUFFER, m_vbo_points);
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
   /* vertex shader texture coords in position 1 */
   glEnableVertexAttribArray(1);
   glBindBuffer (GL_ARRAY_BUFFER, m_vbo_tex);
@@ -50,7 +49,7 @@ bool TexturedQuad::init(const std::string& vshader,
   /* create an OpenGL buffer for pixel texture data */
   glGenBuffers( 1, &m_pbo );
   glBindBuffer( GL_PIXEL_UNPACK_BUFFER, m_pbo );
-  glBufferData( GL_PIXEL_UNPACK_BUFFER, m_width * m_height * 3, 
+  glBufferData( GL_PIXEL_UNPACK_BUFFER, m_width * m_height * 3,
       NULL, GL_DYNAMIC_DRAW );
 
   /* make ID for holding texture color data */
@@ -99,10 +98,8 @@ void TexturedQuad::draw(){
   /* bind texture data from m_tex to current texture */
   glBindTexture(GL_TEXTURE_2D, m_tex);
   /* read from PIXEL_UNPACK_BUFFER */
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height, 
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_width, m_height,
       GL_RGB, GL_UNSIGNED_BYTE, NULL);
   // draw points 0-3 from the currently bound VAO with current in-use shader
   glDrawArrays (GL_TRIANGLE_STRIP, 0, 4);
 }
-
-

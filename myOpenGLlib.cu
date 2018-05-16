@@ -43,6 +43,7 @@ GPUDisplayData::GPUDisplayData(int w, int h, void *data,
     fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
   }
 
+
   if(! quad.init("tquad_v.glsl", "tquad_f.glsl") ) {
     fprintf(stderr, "Quad init oops\n");
   }

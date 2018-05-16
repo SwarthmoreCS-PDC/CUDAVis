@@ -32,5 +32,5 @@ float GPUTimer::elapsed() {
     float elapsed_ms;
     this->stop();
     HANDLE_ERROR( cudaEventElapsedTime(&elapsed_ms, startTime, stopTime) );
-    return elapsed_ms/1000.;
+    return elapsed_ms;
 }

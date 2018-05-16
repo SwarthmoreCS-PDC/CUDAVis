@@ -16,7 +16,7 @@ void CPUTimer::stop() {
 }
 
 void CPUTimer::timeSub(
-        struct timeval& result, 
+        struct timeval& result,
         struct timeval before, struct timeval after){
 
     if(after.tv_usec < before.tv_usec){
@@ -28,7 +28,7 @@ void CPUTimer::timeSub(
 }
 
 void CPUTimer::print() {
-    float diff = stopDiff.tv_sec+stopDiff.tv_usec/1000000.0;
+    float diff = stopDiff.tv_sec*1000+stopDiff.tv_usec/1000.0;
     printf("Elapsed time: %.3f \n", diff);
 }
 
@@ -36,6 +36,5 @@ float CPUTimer::elapsed() {
     struct timeval now;
     gettimeofday(&now,NULL);
     timeSub(curDiff, startTime, now);
-    return curDiff.tv_sec+curDiff.tv_usec/(1000.*1000);
+    return curDiff.tv_sec*1000+curDiff.tv_usec/(1000.);
 }
-
