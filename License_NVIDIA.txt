@@ -1,0 +1,73 @@
+END USER LICENSE AGREEMENT ("Agreement")
+
+BY DOWNLOADING THE SOFTWARE AND OTHER AVAILABLE MATERIALS, YOU ("DEVELOPER")
+AGREE TO BE BOUND BY THE FOLLOWING TERMS AND CONDITIONS OF THIS AGREEMENT. IF
+DEVELOPER DOES NOT AGREE TO THE TERMS AND CONDITION OF THIS AGREEMENT, THEN DO
+NOT DOWNLOAD THE SOFTWARE AND MATERIALS.
+
+The materials available for download to Developers may include software in both
+sample source ("Source Code") and object code ("Object Code") versions, document
+ation ("Documentation"), certain art work ("Art Assets") and other materials
+(collectively, these materials referred to herein as "Materials"). Except as
+expressly indicated herein, all terms and conditions of this Agreement apply to
+all of the Materials.
+
+Except as expressly set forth herein, NVIDIA owns all of the Materials and makes
+them available to Developer only under the terms and conditions set forth in
+this Agreement.
+
+License: Subject to the terms of this Agreement, NVIDIA hereby grants to
+Developer a royalty-free, non-exclusive license to possess and to use the
+Materials. Developer may install and use multiple copies of the Materials on a
+shared computer or concurrently on different computers, and make multiple
+back-up copies of the Materials, solely for Licensee’s use within Licensee’s
+Enterprise. "Enterprise" shall mean individual use by Licensee or any legal
+entity (such as a corporation or university) and the subsidiaries it owns by
+more than 50 percent. The following terms apply to the specified type of
+Material:
+
+Source Code: Developer shall have the right to modify and create derivative
+works with the Source Code. Developer shall own any derivative works
+("Derivatives") it creates to the Source Code, provided that Developer uses the
+Materials in accordance with the terms and conditions of this Agreement.
+Developer may distribute the Derivatives, provided that all NVIDIA copyright
+notices and trademarks are used properly and the Derivatives include the
+following statement: "This software contains source code provided by NVIDIA
+Corporation."
+
+Object Code: Developer agrees not to disassemble, decompile or reverse engineer
+the Object Code versions of any of the Materials. Developer acknowledges that
+certain of the Materials provided in Object Code version may contain third party
+components that may be subject to restrictions, and expressly agrees not to
+attempt to modify or distribute such Materials without first receiving consent
+from NVIDIA.
+
+Art Assets: Developer shall have the right to modify and create Derivatives of
+the Art Assets, but may not distribute any of the Art Assets or Derivatives
+created therefrom without NVIDIA’s prior written consent.
+
+No Other License: No rights or licenses are granted by NVIDIA to Developer under
+this Agreement, expressly or by implication, with respect to any proprietary
+information or patent, copyright, trade secret or other intellectual property
+right owned or controlled by NVIDIA, except as expressly provided in this
+Agreement.
+
+Intellectual Property Ownership: All rights, title, interest and copyrights in
+and to the Materials (including but not limited to all images, photographs,
+animations, video, audio, music, text, and other information incorporated into
+the Materials), are owned by NVIDIA, or its suppliers. The Materials are
+protected by copyright laws and international treaty provisions. Accordingly,
+Developer is required to treat the Materials like any other copyrighted
+material, except as otherwise allowed pursuant to this Agreement.
+
+Term of Agreement: This Agreement will automatically terminate if Licensee
+fails to comply with any of the terms and conditions hereof. In such event,
+Licensee must destroy all copies of the SOFTWARE and all of its component parts.
+
+Defensive Suspension: If Developer commences or participates in any legal
+proceeding against NVIDIA, then NVIDIA may, in its sole discretion, suspend or
+terminate all license grants and any other rights provided under this Agreement
+during the pendency of such legal proceedings.
+
+No Support: NVIDIA has no obligation to support or to continue providing or
+updating any of the Materials.
