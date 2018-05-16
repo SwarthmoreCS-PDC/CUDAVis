@@ -1,3 +1,8 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
+ 
 #version 400
 
 in vec2 texUV;
@@ -13,4 +18,3 @@ void main(){
   //clr = vec3(texUV.x, 0.0, texUV.y);
   clr = tex;
 }
-

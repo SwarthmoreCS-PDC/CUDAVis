@@ -1,3 +1,7 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
 #include <iostream>
 #include <GL/glew.h>
 #include "texturedQuad.h"

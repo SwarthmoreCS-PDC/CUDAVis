@@ -1,3 +1,8 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
+
 #include "timerGPU.h"
 #include "handle_cuda_error.h"
 #include <cstdio>

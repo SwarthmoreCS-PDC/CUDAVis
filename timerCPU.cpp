@@ -1,4 +1,8 @@
-#include "timerCPU.h"
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
+ #include "timerCPU.h"
 #include <cstdio>
 
 CPUTimer::CPUTimer() {

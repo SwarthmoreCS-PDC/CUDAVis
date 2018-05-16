@@ -1,4 +1,8 @@
-#pragma once
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
+ #pragma once
 
 #include "timerBase.h"
 #include <sys/time.h>

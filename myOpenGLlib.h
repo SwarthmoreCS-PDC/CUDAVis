@@ -1,3 +1,7 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
 // This is a class for doing openGL GPU animations of CUDA
 // 2D grid applications
 //

@@ -1,3 +1,7 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
 #pragma once
 
 #include <string>

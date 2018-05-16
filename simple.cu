@@ -1,3 +1,7 @@
+/* Copyright 2016-2018
+ * Swarthmore College Computer Science, Swarthmore PA
+ * T. Newhall, A. Danner
+ */
 // a simple example of how to use myopengllib library to
 // animate a cuda computation
 //
