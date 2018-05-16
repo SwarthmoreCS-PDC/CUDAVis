@@ -12,21 +12,21 @@
 //
 // (danner, 2018)
 
-#include <unistd.h>
-#include <stdio.h>
-#include <math.h>
 #include "gpuDisplayData.h"
 #include "handle_cuda_error.h"
 #include "timerGPU.h"
+#include <math.h>
+#include <stdio.h>
+#include <unistd.h>
 
 // try changing this to different powers of 2
 #define DIM 1024
 #define PI 3.1415926535897932f
 
 static void animate_julia(uchar3 *disp, void *mycudadata);
-static void clean_up(void* mycudadata);
-__host__ __device__ int julia( int x, int y, float re, float im);
-__global__ void  julia_kernel(uchar3 *data, int size, float re, float im);
+static void clean_up(void *mycudadata);
+__host__ __device__ int julia(int x, int y, float re, float im);
+__global__ void julia_kernel(uchar3 *data, int size, float re, float im);
 
 /* The GPUDisplayData class will automatically create
    an RGB buffer of a given width and height for you on
@@ -44,16 +44,15 @@ typedef struct my_cuda_data {
   int ticks; // counter
 } my_cuda_data;
 
-
-int main(int argc, char *argv[])  {
+int main(int argc, char *argv[]) {
 
   // single var holds all program data.  This will be passed to the
   // GPUDisplayData constructor
   my_cuda_data info;
-  info.size=DIM;
-  info.re= -0.800;
-  info.im=  0.156;
-  info.ticks= 0;
+  info.size = DIM;
+  info.re = -0.800;
+  info.im = 0.156;
+  info.ticks = 0;
 
   // The call to the constructor has to come before any calls to
   // cudaMalloc or other Cuda routines
@@ -76,9 +75,7 @@ int main(int argc, char *argv[])  {
 // it is called when the program exits and should clean up
 // all dynamically allocated memory in the my_cuda_data struct.
 // Your clean-up function's prototype must match this
-static void clean_up(void* mycudadata) {
-  /* do nothing */
-}
+static void clean_up(void *mycudadata) { /* do nothing */ }
 
 // amimate function passed to AnimateComputation:
 // this function will be called by openGL's dislplay function.
@@ -102,73 +99,66 @@ static void animate_julia(uchar3 *devPtr, void *my_data) {
      directly in the GPU pixel buffer on the fly. No additional
      GPU pointers are needed from the my_cuda_data struct.
      devPtr is created and passed by the GPUDisplayData class */
-  float im = data->im+0.2*sin(data->ticks/20.);
-  float re = data->re+0.3*cos(data->ticks/17.);
+  float im = data->im + 0.2 * sin(data->ticks / 20.);
+  float re = data->re + 0.3 * cos(data->ticks / 17.);
   GPUTimer timer;
   timer.start();
-  julia_kernel<<<blocks,1>>>(devPtr, data->size, re, im);
+  julia_kernel<<<blocks, 1>>>(devPtr, data->size, re, im);
   printf("Frame generation time: %7.2f ms\r", timer.elapsed());
   data->ticks += 1;
-
 }
 
-__global__ void julia_kernel( uchar3* optr, int size, float re, float im ) {
-    // map from threadIdx/BlockIdx to pixel position
-    int x = blockIdx.x;
-    int y = blockIdx.y;
-    int offset = x + y * size;
+__global__ void julia_kernel(uchar3 *optr, int size, float re, float im) {
+  // map from threadIdx/BlockIdx to pixel position
+  int x = blockIdx.x;
+  int y = blockIdx.y;
+  int offset = x + y * size;
 
-
-    // now calculate the value at that position
-    int juliaValue = julia( x, y, re, im );
-    if (juliaValue == -1){ /* in the set */
-      optr[offset].x = 99;
-      optr[offset].y = 25;
-      optr[offset].z = 25;
-    }
-    else if (juliaValue < 10) {
-      optr[offset].x = 0;
-      optr[offset].y = 255 * juliaValue/10.;
-      optr[offset].z = 0;
-    }
-    else {
-      float t = juliaValue/200.;
-      optr[offset].x = 0;
-      optr[offset].y = 0;
-      optr[offset].z = 255*t;
-    }
-
+  // now calculate the value at that position
+  int juliaValue = julia(x, y, re, im);
+  if (juliaValue == -1) { /* in the set */
+    optr[offset].x = 99;
+    optr[offset].y = 25;
+    optr[offset].z = 25;
+  } else if (juliaValue < 10) {
+    optr[offset].x = 0;
+    optr[offset].y = 255 * juliaValue / 10.;
+    optr[offset].z = 0;
+  } else {
+    float t = juliaValue / 200.;
+    optr[offset].x = 0;
+    optr[offset].y = 0;
+    optr[offset].z = 255 * t;
+  }
 }
 
 struct cuComplex {
-    float   r;
-    float   i;
-    __host__ __device__ cuComplex( float a, float b ) : r(a), i(b)  {}
-    __host__ __device__ float magnitude2( void ) {
-        return r * r + i * i;
-    }
-    __host__ __device__ cuComplex operator*(const cuComplex& a) {
-        return cuComplex(r*a.r - i*a.i, i*a.r + r*a.i);
-    }
-    __host__ __device__ cuComplex operator+(const cuComplex& a) {
-        return cuComplex(r+a.r, i+a.i);
-    }
+  float r;
+  float i;
+  __host__ __device__ cuComplex(float a, float b) : r(a), i(b) {}
+  __host__ __device__ float magnitude2(void) { return r * r + i * i; }
+  __host__ __device__ cuComplex operator*(const cuComplex &a) {
+    return cuComplex(r * a.r - i * a.i, i * a.r + r * a.i);
+  }
+  __host__ __device__ cuComplex operator+(const cuComplex &a) {
+    return cuComplex(r + a.r, i + a.i);
+  }
 };
 
-__host__ __device__ int julia( int x, int y, float re, float im ) {
-    const float scale = 1.5;
-    float jx = scale * (float)(DIM/2 - x)/(DIM/2);
-    float jy = scale * (float)(DIM/2 - y)/(DIM/2);
+__host__ __device__ int julia(int x, int y, float re, float im) {
+  const float scale = 1.5;
+  float jx = scale * (float)(DIM / 2 - x) / (DIM / 2);
+  float jy = scale * (float)(DIM / 2 - y) / (DIM / 2);
 
-    cuComplex c(re, im);
-    cuComplex a(jx, jy);
+  cuComplex c(re, im);
+  cuComplex a(jx, jy);
 
-    int i = 0;
-    for (i=0; i<200; i++) {
-        a = a * a + c;
-        if (a.magnitude2() > 1000)
-            return i;
-    }
+  int i = 0;
+  for (i = 0; i < 200; i++) {
+    a = a * a + c;
+    if (a.magnitude2() > 1000)
+      return i;
+  }
 
-    return -1;
+  return -1;
 }

@@ -28,64 +28,61 @@
 #pragma once
 
 #include <stdio.h>
-
 #include <GL/glew.h>
-#include "cuda.h"
-#include "cuda_gl_interop.h"
+#include <cuda.h>
+#include <cuda_gl_interop.h>
 #include "handle_cuda_error.h"
 #include "texturedQuad.h"
 
+
 class GPUDisplayData {
 
-  private:
-    // openGL data structures
-    cudaGraphicsResource *resource;
-    int width;    // used to create openGL bufferObj of some dimension
-    int height;
-    TexturedQuad quad; // A textured square containing the image pixels
-    bool paused; // Flag to indicate if animation is paused
+private:
+  // openGL data structures
+  cudaGraphicsResource *resource;
+  int width; // used to create openGL bufferObj of some dimension
+  int height;
+  TexturedQuad quad; // A textured square containing the image pixels
+  bool paused;       // Flag to indicate if animation is paused
 
-    void *gpu_data;  // application-specific CUDA data that is used by
-                     // application-spcific drawing functions (this
-                     // is just passed as param to user-supplied
-                     // animate_function)
-                     //
-    static GPUDisplayData  *gpu_disp;  // horrible kludge due to glut
+  void *gpu_data; // application-specific CUDA data that is used by
+                  // application-spcific drawing functions (this
+                  // is just passed as param to user-supplied
+                  // animate_function)
+                  //
+  static GPUDisplayData *gpu_disp; // horrible kludge due to glut
 
-    // function pointers to user-supplied functions:
-    // set an openGL bitmap value based on the program data values
-    // an animation function will take a uchar3 provided by this
-    // class and the gpu_data field value which is a pointer to
-    // som GPU side CUDA data that is used by the animate function
-    void (*animate_function)(uchar3 *color_value, void *cuda_data);
-    // a function that cleans up application-specific, CUDA-side,
-    // allocations
-    void (*exit_function)(void* cuda_data);
+  // function pointers to user-supplied functions:
+  // set an openGL bitmap value based on the program data values
+  // an animation function will take a uchar3 provided by this
+  // class and the gpu_data field value which is a pointer to
+  // som GPU side CUDA data that is used by the animate function
+  void (*animate_function)(uchar3 *color_value, void *cuda_data);
+  // a function that cleans up application-specific, CUDA-side,
+  // allocations
+  void (*exit_function)(void *cuda_data);
 
-    /* private static functions. These are all static because of how
-       glut handles passing of display, keyboard and close functions
-       in a very non C++-friendly way. */
-    static void animate(void);  // function passed to openGLDisplay
-    static void keyboard(unsigned char key, int x, int y);
-    static void close(void);
+  /* private static functions. These are all static because of how
+     glut handles passing of display, keyboard and close functions
+     in a very non C++-friendly way. */
+  static void animate(void); // function passed to openGLDisplay
+  static void keyboard(unsigned char key, int x, int y);
+  static void close(void);
 
-  public:
+public:
+  // the constructor takes dimensions of the openGL graphics display
+  // object to create, and a pointer to a struct containing ptrs
+  // to application-specific CUDA data that the display function
+  // needs in order to change bitmap values in the openGL object
+  GPUDisplayData(int w, int h, void *data, const char *win_name);
+  ~GPUDisplayData();
 
-    // the constructor takes dimensions of the openGL graphics display
-    // object to create, and a pointer to a struct containing ptrs
-    // to application-specific CUDA data that the display function
-    // needs in order to change bitmap values in the openGL object
-    GPUDisplayData(int w, int h, void *data, const char *win_name);
-    ~GPUDisplayData();
+  void RegisterExitFunction(void (*exit_func)(void *data)) {
+    exit_function = exit_func;
+  }
 
-    void RegisterExitFunction(void (*exit_func)(void* data)) {
-      exit_function = exit_func;
-    }
-
-    // this is the main loop, the caller passes in the
-    // animation function and an optional exit function
-    void AnimateComputation(
-        void (*anim_func)(uchar3 *, void *),
-        void (*exit_func)(void *)=NULL);
-
+  // this is the main loop, the caller passes in the
+  // animation function and an optional exit function
+  void AnimateComputation(void (*anim_func)(uchar3 *, void *),
+                          void (*exit_func)(void *) = NULL);
 };

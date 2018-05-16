@@ -15,12 +15,9 @@
 
 #include "handle_cuda_error.h"
 
-void HandleError( cudaError_t err,
-                  const char *file,
-                  int line ) {
-    if (err != cudaSuccess) {
-        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
-                file, line );
-        exit( EXIT_FAILURE );
-    }
+void HandleError(cudaError_t err, const char *file, int line) {
+  if (err != cudaSuccess) {
+    printf("%s in %s at line %d\n", cudaGetErrorString(err), file, line);
+    exit(EXIT_FAILURE);
+  }
 }

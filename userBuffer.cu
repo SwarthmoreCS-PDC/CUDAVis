@@ -17,21 +17,18 @@
 //
 // (newhall, 2016)
 
-#include <unistd.h>
-#include <stdio.h>
 #include "gpuDisplayData.h"
 #include "handle_cuda_error.h"
+#include <stdio.h>
+#include <unistd.h>
 
 // try changing this to different powers of 2
 #define DIM 512
 
 static void animate_simple(uchar3 *disp, void *mycudadata);
-static void clean_up(void* mycudadata);
-__global__ void int_to_color( uchar3 *optr,
-    const int *my_cuda_data, int ncols);
-__global__ void  simplekernel(int *data, int ncols);
-
-
+static void clean_up(void *mycudadata);
+__global__ void int_to_color(uchar3 *optr, const int *my_cuda_data, int ncols);
+__global__ void simplekernel(int *data, int ncols);
 
 // if your program needs more GPU data, use a struct
 // with fields for each value needed.
@@ -42,22 +39,21 @@ typedef struct my_cuda_data {
   int cols;
 } my_cuda_data;
 
-
-int main(int argc, char *argv[])  {
+int main(int argc, char *argv[]) {
 
   // single var holds all program data.  This will be passed to the
   // GPUDisplayData constructor
   my_cuda_data info;
-  int* matrix;
-  int rows=DIM;
-  int cols=DIM;
+  int *matrix;
+  int rows = DIM;
+  int cols = DIM;
 
-  matrix = (int*) malloc(rows*cols*sizeof(int));
-  info.rows=rows;
-  info.cols=cols;
+  matrix = (int *)malloc(rows * cols * sizeof(int));
+  info.rows = rows;
+  info.cols = cols;
   info.cpu_grid = matrix;
 
-  //simple_prog_data.cpu_grid=smat;
+  // simple_prog_data.cpu_grid=smat;
 
   // The call to the constructor has to come before any calls to
   // cudaMalloc or other Cuda routines
@@ -68,19 +64,20 @@ int main(int argc, char *argv[])  {
   GPUDisplayData my_display(info.cols, info.rows, &info, "Simple openGL-Cuda");
 
   // initialize application data
-  for(int i =0; i < info.rows; i++) {
-    for(int j =0; j < info.cols; j++) {
-      matrix[i*info.cols+j] = j;
+  for (int i = 0; i < info.rows; i++) {
+    for (int j = 0; j < info.cols; j++) {
+      matrix[i * info.cols + j] = j;
     }
   }
 
   // allocate memory space for our application data on the GPU
-  HANDLE_ERROR(cudaMalloc((void**)&info.dev_grid,
-        sizeof(int)*info.rows*info.cols) ) ;
+  HANDLE_ERROR(
+      cudaMalloc((void **)&info.dev_grid, sizeof(int) * info.rows * info.cols));
 
   // copy the initial data to the GPU
-  HANDLE_ERROR (cudaMemcpy(info.dev_grid, matrix,
-        sizeof(int)*info.rows*info.cols, cudaMemcpyHostToDevice) ) ;
+  HANDLE_ERROR(cudaMemcpy(info.dev_grid, matrix,
+                          sizeof(int) * info.rows * info.cols,
+                          cudaMemcpyHostToDevice));
 
   // register a clean-up function on exit that will call cudaFree
   // on any cudaMalloc'ed space
@@ -95,11 +92,12 @@ int main(int argc, char *argv[])  {
 // it is called when the program exits and should clean up
 // all dynamically allocated memory in the my_cuda_data struct.
 // Your clean-up function's prototype must match this
-static void clean_up(void* mycudadata) {
-  my_cuda_data* info = (my_cuda_data*) mycudadata;
-  HANDLE_ERROR(cudaFree(info->dev_grid) );
-  info->dev_grid=NULL;
-  free( info->cpu_grid ); info->cpu_grid=NULL;
+static void clean_up(void *mycudadata) {
+  my_cuda_data *info = (my_cuda_data *)mycudadata;
+  HANDLE_ERROR(cudaFree(info->dev_grid));
+  info->dev_grid = NULL;
+  free(info->cpu_grid);
+  info->cpu_grid = NULL;
 }
 
 // amimate function passed to AnimateComputation:
@@ -118,21 +116,20 @@ static void clean_up(void* mycudadata) {
 static void animate_simple(uchar3 *devPtr, void *my_data) {
 
   my_cuda_data *simple_data = (my_cuda_data *)my_data;
-  dim3 blocks(simple_data->cols/8, simple_data->rows/8, 1);
+  dim3 blocks(simple_data->cols / 8, simple_data->rows / 8, 1);
   dim3 threads_block(8, 8, 1);
 
   // comment out the for loop to do a display update every
   // execution of simplekernel
-  for(int i=0; i < 90; i++)
-    simplekernel<<<blocks,threads_block>>>(
-        simple_data->dev_grid, simple_data->cols);
+  for (int i = 0; i < 90; i++)
+    simplekernel<<<blocks, threads_block>>>(simple_data->dev_grid,
+                                            simple_data->cols);
 
-  int_to_color<<<blocks,threads_block>>>(devPtr,
-      simple_data->dev_grid,  simple_data->cols);
+  int_to_color<<<blocks, threads_block>>>(devPtr, simple_data->dev_grid,
+                                          simple_data->cols);
 
   // I needed to slow it down:
   usleep(90000);
-
 }
 
 // a kernel to set the color the opengGL display object based
@@ -141,30 +138,30 @@ static void animate_simple(uchar3 *devPtr, void *my_data) {
 //  optr: is an array of openGL RGB pixels, each is a
 //        3-tuple (x:red, y:green, z:blue)
 //  my_cuda_data: is cuda 2D array of ints
-__global__ void int_to_color( uchar3 *optr, const int *my_cuda_data, int cols ) {
+__global__ void int_to_color(uchar3 *optr, const int *my_cuda_data, int cols) {
 
-    // get this thread's block position to map into
-    // location in opt and my_cuda_data
-    // the x and y values depend on how you parallelize the
-    // kernel (<<<blocks, threads>>>).
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
-    int offset = x + y*cols;
+  // get this thread's block position to map into
+  // location in opt and my_cuda_data
+  // the x and y values depend on how you parallelize the
+  // kernel (<<<blocks, threads>>>).
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
+  int offset = x + y * cols;
 
-    // change this pixel's color value based on some strange
-    // functions of the my_cuda_data value
-    optr[offset].x = (my_cuda_data[offset]+10)%255;  // R value
-    optr[offset].y = (my_cuda_data[offset]+100)%255; // G value
-    optr[offset].z = (my_cuda_data[offset]+200)%255; // B value
+  // change this pixel's color value based on some strange
+  // functions of the my_cuda_data value
+  optr[offset].x = (my_cuda_data[offset] + 10) % 255;  // R value
+  optr[offset].y = (my_cuda_data[offset] + 100) % 255; // G value
+  optr[offset].z = (my_cuda_data[offset] + 200) % 255; // B value
 }
 
 // a simple cuda kernel: cyclicly increases a points value by 10
 //  data: a "2D" array of int values
-__global__ void  simplekernel(int *data, int ncols) {
+__global__ void simplekernel(int *data, int ncols) {
 
-    int x = blockIdx.x * blockDim.x + threadIdx.x;
-    int y = blockIdx.y * blockDim.y + threadIdx.y;
-    int offset = x + y*ncols;
+  int x = blockIdx.x * blockDim.x + threadIdx.x;
+  int y = blockIdx.y * blockDim.y + threadIdx.y;
+  int offset = x + y * ncols;
 
-    data[offset] = (data[offset] + 10)%1000;
+  data[offset] = (data[offset] + 10) % 1000;
 }

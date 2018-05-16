@@ -15,18 +15,18 @@
 // from CUDA by Example (Section 5.2.2)
 // (danner, 2018)
 
-#include <unistd.h>
-#include <stdio.h>
 #include "gpuDisplayData.h"
 #include "handle_cuda_error.h"
+#include <stdio.h>
+#include <unistd.h>
 
 // try changing this to different powers of 2
 #define DIM 1024
 #define PI 3.1415926535897932f
 
 static void animate_ripple(uchar3 *disp, void *mycudadata);
-static void clean_up(void* mycudadata);
-__global__ void  ripple(uchar3 *data, int size, int ticks);
+static void clean_up(void *mycudadata);
+__global__ void ripple(uchar3 *data, int size, int ticks);
 
 /* The GPUDisplayData class will automatically create
    an RGB buffer of a given width and height for you on
@@ -42,14 +42,13 @@ typedef struct my_cuda_data {
   int ticks; // a time tick for updating the animation
 } my_cuda_data;
 
-
-int main(int argc, char *argv[])  {
+int main(int argc, char *argv[]) {
 
   // single var holds all program data.  This will be passed to the
   // GPUDisplayData constructor
   my_cuda_data info;
-  info.size=DIM;
-  info.ticks=0;
+  info.size = DIM;
+  info.ticks = 0;
 
   // The call to the constructor has to come before any calls to
   // cudaMalloc or other Cuda routines
@@ -72,9 +71,7 @@ int main(int argc, char *argv[])  {
 // it is called when the program exits and should clean up
 // all dynamically allocated memory in the my_cuda_data struct.
 // Your clean-up function's prototype must match this
-static void clean_up(void* mycudadata) {
-  /* do nothing */
-}
+static void clean_up(void *mycudadata) { /* do nothing */ }
 
 // amimate function passed to AnimateComputation:
 // this function will be called by openGL's dislplay function.
@@ -93,32 +90,31 @@ static void animate_ripple(uchar3 *devPtr, void *my_data) {
 
   int tdim = 8;
   my_cuda_data *data = (my_cuda_data *)my_data;
-  dim3 blocks(data->size/tdim, data->size/tdim);
+  dim3 blocks(data->size / tdim, data->size / tdim);
   dim3 threads_block(tdim, tdim);
 
   /* This example just needs a time tick to generate an image
      directly in the GPU pixel buffer on the fly. No additional
      GPU pointers are needed from the my_cuda_data struct.
      devPtr is created and passed by the GPUDisplayData class */
-  ripple<<<blocks,threads_block>>>(devPtr, data->size, data->ticks);
+  ripple<<<blocks, threads_block>>>(devPtr, data->size, data->ticks);
   data->ticks += 2;
 }
 
-__global__ void ripple( uchar3* optr, int size, int ticks ) {
-    // map from threadIdx/BlockIdx to pixel position
-    int x = threadIdx.x + blockIdx.x * blockDim.x;
-    int y = threadIdx.y + blockIdx.y * blockDim.y;
-    int offset = x + y * size;
+__global__ void ripple(uchar3 *optr, int size, int ticks) {
+  // map from threadIdx/BlockIdx to pixel position
+  int x = threadIdx.x + blockIdx.x * blockDim.x;
+  int y = threadIdx.y + blockIdx.y * blockDim.y;
+  int offset = x + y * size;
 
-    // compute distance from center of image
-    float fx = x - size/2;
-    float fy = y - size/2;
-    float d = sqrtf( fx * fx + fy * fy );
-    unsigned char grey = (unsigned char)(128.0f + 127.0f *
-                                         cos(d/10.0f - ticks/7.0f) /
-                                         (d/10.0f + 1.0f));
-    optr[offset].x = grey;
-    optr[offset].y = grey;
-    optr[offset].z = grey;
-
+  // compute distance from center of image
+  float fx = x - size / 2;
+  float fy = y - size / 2;
+  float d = sqrtf(fx * fx + fy * fy);
+  unsigned char grey = (unsigned char)(128.0f +
+                                       127.0f * cos(d / 10.0f - ticks / 7.0f) /
+                                           (d / 10.0f + 1.0f));
+  optr[offset].x = grey;
+  optr[offset].y = grey;
+  optr[offset].z = grey;
 }
