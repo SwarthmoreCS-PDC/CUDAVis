@@ -4,7 +4,7 @@ This code allows provides an easy to use [GPUDisplayData](gpuDisplayData.h) clas
 
 # Requirements
 
-  * An CUDA capable NVIDIA graphics card (See [caveats](#Caveats) below)
+  * An CUDA capable NVIDIA graphics card (See [caveats](#caveats) below)
   * [CUDA libraries](https://developer.nvidia.com/cuda-downloads)
   * OpenGL
   * [freeglut](http://freeglut.sourceforge.net/)
