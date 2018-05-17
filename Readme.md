@@ -4,7 +4,7 @@ This code allows provides an easy to use [GPUDisplayData](gpuDisplayData.h) clas
 
 # Requirements
 
-  * An CUDA capable NVIDIA graphics card
+  * An CUDA capable NVIDIA graphics card (See [caveats](#Caveats) below)
   * [CUDA libraries](https://developer.nvidia.com/cuda-downloads)
   * OpenGL
   * [freeglut](http://freeglut.sourceforge.net/)
@@ -59,6 +59,15 @@ my_display.RegisterExitFunction(clean_up);
 
 In [userBuffer.cu](userBuffer.cu), the user specified data includes additional GPU buffers.
 
+# Caveats
+
+ CUDA began deprecating order compute architectures in CUDA 7.5. If you are using a new CUDA version with very old NVIDIA GPUs, the [CMakeList.txt](CMakeList.txt) may misconfigure your build and result in code that compiles but seems to display white noise instead of a useful image. You can comment out the line
+
+ ```  
+ LIST(APPEND CUDA_NVCC_FLAGS "-arch=sm_30")
+ ```
+
+ To use the deprecated architectures, but these will likely be removed in future versions of CUDA. Additionally, more complex examples like [julia.cu](julia.cu) may run very slowly or not at all on older graphics hardware.  
 
 
 # References
