@@ -61,7 +61,7 @@ In [userBuffer.cu](userBuffer.cu), the user specified data includes additional G
 
 # Caveats
 
- CUDA began deprecating order compute architectures in CUDA 7.5. If you are using a new CUDA version with very old NVIDIA GPUs, the [CMakeList.txt](CMakeList.txt) may misconfigure your build and result in code that compiles but seems to display white noise instead of a useful image. You can comment out the line
+ CUDA began deprecating order compute architectures in CUDA 7.5. If you are using a new CUDA version with very old NVIDIA GPUs, the [CMakeLists.txt](CMakeLists.txt) may misconfigure your build and result in code that compiles but seems to display white noise instead of a useful image. You can comment out the line
 
  ```  
  LIST(APPEND CUDA_NVCC_FLAGS "-arch=sm_30")
